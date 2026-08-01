@@ -46,25 +46,16 @@ All inside the 20% tolerance, and the agreement degrades as you go down the spec
 
 ### Regime 2.1 — is magnitude and direction conflated?
 
-**What's being tested:** [Eq (10)](https://arxiv.org/abs/1108.4258) predicts that when eigenvectors are held perfectly fixed and only the eigenvalues move between windows, the measured distance equals
+**What's being tested:** [Eq (10)](https://arxiv.org/abs/1108.4258) predicts that when eigenvectors are held perfectly fixed and only the eigenvalues move between windows, the measured distance is $D$:
+
+Let $E_s, E_t$ be the sample covariances from the two windows, $U_s \in \mathbb{R}^{N \times P}$
+the leading $P$ eigenvectors of $E_s$, and $V_t \in \mathbb{R}^{N \times Q}$ the leading $Q$
+of $E_t$. The overlap matrix is $G^{s,t} = V_t^{\mathsf T} U_s \in \mathbb{R}^{Q \times P}$.
 
 $$
 \begin{aligned}
-D(P,Q;s,t)
-&=
--\frac{1}{2P}
-\ln\left|\det\!\left((G^{s,t})^\dagger G^{s,t}\right)\right| \\[4pt]
-&\approx
-\frac{1}{2TP}
-\left[
-(\boldsymbol{\lambda}_{A}^{(s)})^{\mathsf T}
-\mathbf{C}
-\boldsymbol{\lambda}_{B}^{(s)}
-+
-(\boldsymbol{\lambda}_{A}^{(t)})^{\mathsf T}
-\mathbf{C}
-\boldsymbol{\lambda}_{B}^{(t)}
-\right].
+D(P,Q;s,t) &= -\frac{1}{2P}\,\mathbb{E}\left[\ln\det\left((G^{s,t})^{\mathsf T} G^{s,t}\right)\right] \\
+&\approx \frac{1}{2TP}\sum_{i=1}^{P}\sum_{j=Q+1}^{N}\left[\frac{\lambda_i^s\lambda_j^s}{(\lambda_i^s-\lambda_j^s)^2}+\frac{\lambda_i^t\lambda_j^t}{(\lambda_i^t-\lambda_j^t)^2}\right]
 \end{aligned}
 $$
 
