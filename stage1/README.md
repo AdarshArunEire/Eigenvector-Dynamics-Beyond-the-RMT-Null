@@ -8,11 +8,20 @@ reference; literature checks 2 and 3 written up).
 **Exit gate:** regimes 1-3 pass; power curve recorded; `D_emp > D_th`
 reproduced on real equity data with the qualitative `T* ~ 2yr` peak present.
 
-**Status:** regimes 1 and 2 pass, but regime 2 leaves two items open rather than
-closed: the estimated-spectrum substitution error has no portable law and no
-working correction (2.2), and within-window level drift inflates `D` with no
-rotation present (2.3). Both are `T`-dependent, and they pull in opposite
-directions along the axis `T*` is read off.
+**Status:** regimes 1, 2 and 3 run; power curve recorded. Only the real-data
+condition remains.
+
+Regime 2 leaves two items open rather than closed: the estimated-spectrum
+substitution error has no portable law and no working correction (2.2), and
+within-window level drift inflates `D` with no rotation present (2.3). Both are
+`T`-dependent, and they pull in opposite directions along the axis `T*` is read
+off.
+
+Regime 3 closes the assumption the other two rested on — `excess = D_emp - D_th`
+is a legitimate subtraction — and settles `Q` deterministically via the
+Marchenko-Pastur edge. Its second bet fails honestly: adaptive-gap block
+selection loses to a fixed `P`, because it optimises stability while the
+instrument needs coverage.
 
 **Failure route:** none. If this fails, the code is wrong. Fix it.
 
@@ -44,8 +53,8 @@ it, and is the only one of the five that is free to increase. Easy to conflate
 | 2.1 | Regime 2 — fixed eigenvectors, time-varying eigenvalues | `D_num ≈ D_th` | ratio 1.0015 at `sigma=0.06`; pooled 1.005 ± 0.003 over 4000 trials | **Pass** |
 | 2.2 | Estimated spectrum substituted for the true one | Bias small and shrinking in `T` | Under 1.5% at `N/T < 0.3` for `N=40`, but −11.5% by `N/T=0.89`, and sign-flips with `N`. No portable law; bootstrap correction fails. | **Open — measure in situ at regime 4's settings** |
 | 2.3 | Common eigenvalue drift *within* a window | Eq (10) fails; `D` inflated | Inflated by `1 + h²/3`, matched to 2% at `h=0.6, 0.8` | **Pass (breaks as predicted)** |
-| 3.1 | Regime 3 — injected drift | Recovers injected magnitude | not run | — |
-| 3.2 | Label granularity (Amendment 3) | Adaptive-gap blocks beat fixed and per-mode on recovery variance | not run | — |
+| 3.1 | Regime 3 — injected drift | Recovers injected magnitude | `D_emp = D_th + D_inject` to 2% over a 300x range of theta, 0.1% once clear of the floor | **Pass** |
+| 3.2 | Label granularity | Adaptive-gap blocks beat fixed and per-mode on recovery | `Q` solved by the MP edge (99.6% correct on samples). `P`: no scheme dominates, and adaptive-gap picks `P=1`, which is blind to two of three injection sites | **Fail — adaptive answers the wrong question** |
 | 4.1 | Nikkei reproduction | `D_emp > D_th`, ratio peaks near τ ≈ 500d | not run | — |
 
 ## Regime 1 status — passing
@@ -379,6 +388,213 @@ A first attempt ramped only the top 3 eigenvalues and found no effect at any
 fixed the time-average factorises as `<λ_i> λ_j` and the drift cancels exactly.
 Only drift that is common to both sides of the `P/Q` split can break the
 factorisation. Recorded because the null result is misleading on its own.
+
+## Regime 3 status — 3.1 passing, 3.2 answered in the negative
+
+Run: `python -m pytest tests/test_regime3_injected_drift.py tests/test_regime3_2_block_choice.py -q`.
+
+Regimes 1 and 2 asked whether the instrument reports rotation when there is
+none. Regime 3 asks the mirror question, and in doing so tests the one
+assumption the other two structurally could not.
+
+### Two different worlds, deliberately
+
+The numbers in 3.1 and 3.2 are not comparable, and the difference is not an
+oversight:
+
+| | 3.1 | 3.2 |
+|---|---|---|
+| bulk | `linspace(1.3, 0.4)`, as regimes 1 and 2 | flat at 1.0 |
+| injection | single Givens plane | whole block |
+| `D_inject` | `-ln(cos theta) / P` | `-ln(cos theta)` |
+
+3.1 continues the established world so its results sit alongside regimes 1 and
+2. 3.2 needs a bulk that is genuinely sampling noise, because the
+Marchenko-Pastur edge is meaningless otherwise — see below. And 3.2 needs an
+injection whose cost does not depend on `P`, or the comparison it exists to
+make is rigged before it starts.
+
+So `theta_min = 4.1` degrees in 3.1 and `2.58` degrees at `P=3` in 3.2 are
+both correct and describe different experiments.
+
+### 3.1 — what the subtraction rests on
+
+Every result downstream is `excess = D_emp - D_th`. That subtraction assumes
+**additivity**: that noise-rotation and real-rotation combine by addition.
+There is a reason to expect it, since for small angles
+`D = -(1/P) sum_k ln cos(theta_k) ~ (1/2P) sum_k theta_k^2` and squared angles
+from independent sources add. But "approximately, for small angles" is doing
+the work in that sentence, and regimes 1 and 2 both had zero signal, so the
+assumption never had to hold.
+
+Injection is a single Givens rotation, chosen so the truth is known in closed
+form rather than simulated: exactly one principal angle equals `theta` and the
+rest are zero, giving `D_inject = -ln(cos theta) / P`.
+
+Settings: regime 1's spectrum, `N, P, Q, T = 40, 3, 6, 2000`, mode 0 rotated
+into mode 10, 300–400 trials.
+
+| `theta` | `D_inject` | predicted | `D_emp` | ratio | recovery |
+|---|---|---|---|---|---|
+| 0.00 | — | 0.001930 | 0.001967 | 1.019 | — |
+| 0.05 | 0.000417 | 0.002347 | 0.002395 | 1.021 | 1.115 |
+| 0.10 | 0.001669 | 0.003599 | 0.003656 | 1.016 | 1.034 |
+| 0.20 | 0.006712 | 0.008642 | 0.008710 | 1.008 | 1.010 |
+| 0.30 | 0.015231 | 0.017160 | 0.017232 | 1.004 | 1.005 |
+| 0.80 | 0.120464 | 0.122394 | 0.122257 | 0.999 | 0.999 |
+
+Additivity holds to 2% across a 300-fold range of injected magnitude, tightening
+to 0.1% once the injection clears the noise floor. **The subtraction is
+legitimate.**
+
+The residual is a roughly constant *absolute* offset of about 3% of `D_th` —
+the same `O(1/T^2)` positive bias regime 1 showed at +0.25% and regime 2 at
++0.5%. A fixed offset matters proportionally more the smaller the quantity it
+is divided by, which is the whole of the `recovery` column: 1.115 at
+`theta=0.05`, 1.010 at `theta=0.20`. Near the detection floor, recovered
+magnitude runs about 10% high. This does **not** affect the detection threshold
+below, because that threshold is derived from a null distribution carrying the
+same offset, so it cancels.
+
+Verified out to `theta = 0.8` rad (46 degrees). Beyond that, untested.
+
+### Guarding the injection
+
+Three noiseless checks run before any sweep, because an injection that injects
+nothing produces a clean-looking null result:
+
+| rotate mode 0 into | where it lands | `D` |
+|---|---|---|
+| mode 1 | inside the top-`P` block | 0 |
+| mode 4 | the `P..Q` buffer | 0 |
+| mode 10 | past `Q` | `-ln(cos theta)/P`, exactly |
+
+The middle row is the only direct evidence in the project that `Q > P` does
+what it is supposed to. A fourth test pins the boundary itself: rotation into
+mode `Q-1` is invisible, into mode `Q` it is not.
+
+### Power curve
+
+Not a hypothesis and so not a ledger row — a recorded characterisation, and the
+exit gate's third condition. Detection threshold on a **single** pair of
+windows, threshold set at the 95th percentile of the `theta=0` distribution
+(5% false positive), read at 80% power:
+
+| `T` | `theta_min` (rad) | `theta_min` (deg) |
+|---|---|---|
+| 250 | 0.240 | 13.8° |
+| 500 | 0.149 | 8.5° |
+| 1000 | 0.103 | 5.9° |
+| 2000 | 0.072 | 4.1° |
+
+`theta_min ~ 3.2/sqrt(T)`, confirmed rather than assumed: `theta_min * sqrt(T)`
+comes out 3.80, 3.34, 3.27, 3.21 across those rows, converging, with `T=250`
+off in the same direction everything else at low `T` has been. The scaling is
+what the algebra predicts — `D_inject ~ theta^2/2P` against a floor `~ 1/T`.
+
+At two years of daily data the instrument resolves a rotation of roughly 8
+degrees. In portfolio terms: a position built orthogonal to the top directions
+two years ago now carries a `sin(8 deg) ~ 14%` component along them, and that
+is the smallest such exposure that could be demonstrated rather than asserted.
+
+Note this is single-window-pair detection. A real analysis averages over many
+pairs at fixed lag, which lowers the floor by roughly `sqrt(n)` — so this table
+is conservative for the paper's setting, not optimistic.
+
+### 3.2 — `Q` is solved, `P` is not, and cannot be
+
+**`Q` is deterministic.** The Marchenko-Pastur upper edge
+`lam_+ = sigma^2 (1 + sqrt(N/T))^2` is the largest eigenvalue pure noise
+produces; anything above it is inconsistent with noise. `sigma^2` is
+re-estimated from the sub-edge bulk and iterated to a fixed point, since the
+factors inflate any naive average. Implemented as `q_from_mp_edge`.
+
+On a spectrum of six factors over a flat bulk at 1.0, it recovers
+`sigma^2 = 1.0000` and `Q = 6`, and picks `Q = 6` from *sample* spectra in
+99.6% of trials. One free parameter eliminated, using only the observed
+spectrum and `T`.
+
+This is Marchenko & Pastur (1967) by way of Laloux, Cizeau, Bouchaud & Potters,
+PRL 83 (1999) 1467 — which is ref [8] of arXiv:1108.4258, so the rule comes
+from the instrument's own lineage rather than from outside it.
+
+**It carries an assumption that must be checked, not assumed: the bulk has to
+actually be noise.** Applied to regime 1's spectrum, whose bulk is a `linspace`
+from 1.3 to 0.4, the same procedure returns `Q = 27`. That is not a failure of
+the rule. That bulk is genuine spread structure, and MP is correct to refuse to
+call it noise. The large `Q` is the criterion reporting that it does not apply,
+and it is unit-tested as such. Before trusting the edge on real data, confirm
+the bulk looks Marchenko-Pastur.
+
+**`P` has no dominating choice.** Detection threshold by block size, `Q = 6`
+fixed by the edge, whole-block injection so `D_inject` is `P`-independent:
+
+| `P` | whole block tilts | only mode 0 | only mode 2 | only mode 4 |
+|---|---|---|---|---|
+| 1 | 1.76° | 1.76° | **blind** | **blind** |
+| 2 | 2.10° | 2.97° | **blind** | **blind** |
+| 3 | 2.58° | 4.46° | 4.46° | **blind** |
+| 4 | 3.04° | 6.07° | 6.07° | **blind** |
+| 5 | 3.49° | 7.80° | 7.80° | 7.80° |
+
+Read the first column alone and `P=1` wins. Read across and that conclusion is
+worthless: `P=1` cannot see rotation in modes 2 or 4 at all — not poorly,
+**exactly zero**, with no noise involved and no quantity of data able to
+recover it. The blindness is exact and is unit-tested without any sampling.
+
+So the trade is sharpness against coverage, and the cost of coverage is
+superlinear. `D_inject` is `P`-independent by construction, so only the noise
+moves, and each mode added to the block sits closer to the bulk with a smaller
+gap:
+
+| mode | `lambda` | noise contribution | vs mode 0 |
+|---|---|---|---|
+| 0 | 25.0 | 1.476 | 1.0x |
+| 1 | 10.0 | 4.198 | 2.8x |
+| 2 | 6.0 | 8.160 | 5.5x |
+| 3 | 4.0 | 15.111 | 10.2x |
+| 4 | 3.0 | 25.500 | 17.3x |
+| 5 | 2.2 | 51.944 | 35.2x |
+
+35-fold across six factors. The `1/P` in `D` cannot damp a term growing that
+fast.
+
+**The ledger bet fails.** Adaptive-gap selection picks `P=1` here, the largest
+log-gap being `ln(25/10) = 0.916` at the very top. And `P=1` is blind in two of
+the three injection scenarios. The gap rule is not arbitrary — Davis-Kahan
+bounds subspace rotation by `||E|| / delta`, so wide gaps genuinely do buy
+stability, and Eq (7) has precisely that shape with the gap in the denominator
+and the noise magnitude on top. But stability is not the objective. A perfectly
+stable block that excludes the rotation you were looking for is worse than a
+noisier one that contains it, and the gap rule cannot see the difference.
+
+**Direction does not matter.** Comparing old-`P`-in-new-`Q` against
+new-`P`-in-old-`Q` gives 1.65 vs 1.63, 2.42 vs 2.45, 2.31 vs 2.26, 3.10 vs 3.06
+degrees. Under 2%, no consistent sign. The asymmetry in `subspace_distance` is
+real but immaterial for detection, so the paper's convention is kept for
+interpretability at no cost.
+
+### Reproduction notes and limits
+
+Every figure above comes from a fixed seed and is reproduced by the test suite;
+the basis is always drawn from `default_rng(20260801)` so the same Haar frame is
+shared across all three regimes.
+
+Two limits worth stating plainly:
+
+- **The `theta_min` figures are optimistic by roughly 5–10%.** They are computed
+  from the null distribution via an additivity shortcut — the injection needed
+  is the 95th minus the 20th percentile of the null — rather than by injecting
+  at each angle. Direct spot checks give 74% power where the table claims 80%
+  at `P=1, 1.76 deg`, and 72% at `P=5, 3.49 deg`. Injection widens the
+  distribution as well as shifting it, and the shortcut ignores the widening.
+  Ordering, scaling and the blindness structure are unaffected. Any threshold
+  that leaves this project should be measured directly.
+- **`P=3` is a defensible compromise on this spectrum and nothing more.** It
+  covers the three strongest factors at 2.58 degrees against 1.76 for a `P=1`
+  that watches only the market mode. The number will not transfer to the Nikkei.
+  What transfers is the procedure: locate the factors, choose `P` to cover the
+  ones you care about, and pay the threshold.
 
 ## Note on the `D_RMT` normalisation
 

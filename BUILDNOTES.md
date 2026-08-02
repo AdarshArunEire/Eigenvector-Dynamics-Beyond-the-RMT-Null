@@ -149,3 +149,58 @@ On the paper's claim: at fixed N the decay fits $T^{-1.34}$ against the $T^{-1/2
 The square shows up because a whole-window estimate recovers the time-average of the level, but its sampling noise is set by the time-average of the *square*, and those two disagree by exactly $1+\mathrm{CV}^2$. Shape-independent to within 2%. So the law is $1 + \mathrm{CV}^2$. This matters because **CV is measurable on real returns without knowing anything about eigenvectors** — it is just the variability of the market's variance level inside each window.
 
 **Parked, tbd with real data.** I currently am not sure if estimating the vol path from returns is accurate, and both standardisation and simply factoring out $1+\mathrm{CV}^2$ rely on it. 
+
+### Regime 3.1 —  is subtracting $D_{th}$ legitimate?
+
+**What's being tested:** The method is to compute $\operatorname{Excess} = D_{emp} - D_{th}$, and I want to confirm it is a real signal of rotation. Specifically, does additivity hold? Do noise-rotation and real-rotation combine by simple addition?
+
+**Setup:** A Givens rotation rotates modes $i$ and $j$ by angle $\theta$, so the new eigenvector $i$ is $\cos(\theta)q_i + \sin(\theta)q_j$. That gives $D_{inject} = -\ln(\cos(\theta))/P$. What I want to see is $D_{emp} \approx D_{th} + D_{inject}(\theta)$, and where additivity breaks: it must, as $\ln\cos(\theta)$ diverges as $\theta \rightarrow \pi/2$.
+
+**Verdict:**
+
+| $\theta$ | $D_{inject}$ | predicted | $D_{emp}$ | ratio | recovery |
+|---|---|---|---|---|---|
+| 0.00 | — | 0.001930 | 0.001967 | 1.019 | — |
+| 0.05 | 0.000417 | 0.002347 | 0.002395 | 1.021 | 1.115 |
+| 0.10 | 0.001669 | 0.003599 | 0.003656 | 1.016 | 1.034 |
+| 0.20 | 0.006712 | 0.008642 | 0.008710 | 1.008 | 1.010 |
+| 0.30 | 0.015231 | 0.017160 | 0.017232 | 1.004 | 1.005 |
+| 0.80 | 0.120464 | 0.122394 | 0.122257 | 0.999 | 0.999 |
+
+$D_{emp} = D_{th} + D_{inject}$ to within 2% everywhere, tightening to 0.1% once the injected rotation exceeds the noise floor. The residual is a roughly constant absolute offset, about 3% of $D_{th}$.
+
+**Power curve.** Detection threshold on a *single* pair of windows, 5% false positive (threshold = 95th percentile of the θ=0 distribution), 80% power:
+
+| T | $\theta_{min}$ (rad) | $\theta_{min}$ (deg) |
+|---|---|---|
+| 250 | 0.240 | 13.8° |
+| 500 | 0.149 | 8.5° |
+| 1000 | 0.103 | 5.9° |
+| 2000 | 0.072 | 4.1° |
+
+$\theta_{min} \approx 3.2/\sqrt{T}$, as expected since $D_{inject} \approx \theta^2/2P$ against a noise floor $\propto 1/T$. At two years of daily data I can detect a rotation of about 8°, and anything below that is indistinguishable from noise.
+
+### Regime 3.2 —  P's and (not) Q's 
+
+**What's being tested:** The [paper](https://arxiv.org/abs/1108.4258) poses the question *"how should one choose q ≥ p such that the subspace has significant overlap"*, and so far I have simply used $P=3, Q=6$. Now I will investigate these values, and navigate between two extremes: $Q = P$: hypersensitive to all noise that causes rank swaps; $Q = N$: the outer block is all of space, $D = 0$ perpetually.
+
+**Setup:** Consider three schemes: A fixed $P$ and $Q$, $P = 1$ and track eigenvectors individually, and an adaptive gap. This time, a Givens rotation will rotate the whole block as opposed to a single-plane rotation. *Q* is a solved choice, given by the Marchenko–Pastur upper edge 
+$$
+\lambda_+ = \sigma^2\left(1+\sqrt{q}\right)^2, \qquad q = N/T
+$$
+
+**Verdict:** Q is deterministic, with a real MP bulk, the edge recovers $\sigma^2 = 1.0000$, giving edge 1.3028 and $Q = 6$. The main result was about $P$:
+
+| P | whole block tilts | only mode 0 tilts | only mode 2 tilts | only mode 4 tilts |
+|---|---|---|---|---|
+| 1 | 1.76° | 1.76° | blind | blind |
+| 2 | 2.10° | 2.97° | blind | blind |
+| 3 | 2.58° | 4.46° | 4.46° | blind |
+| 4 | 3.04° | 6.07° | 6.07° | blind |
+| 5 | 3.49° | 7.80° | 7.80° | 7.80° |
+
+The tradeoff is:
+- Small P — sharpest threshold, blind below its own boundary
+- Large P — sees everything in the block, pays for it (2× worse threshold at $P=5$ vs $P=1$)
+
+This motivates a fixed $P$ value that is adjusted in context, as opposed to Davis–Kahan largest log-gap, which defaults to $P=1$ for stability. In general, I will continue with $P=3$ as it covers the top three factors down to 2.58 degrees.

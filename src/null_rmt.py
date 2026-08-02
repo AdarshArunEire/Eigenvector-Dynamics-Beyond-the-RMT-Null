@@ -50,6 +50,59 @@ def eigenvalue_variogram_null(lam, T):
     return 4.0 * np.asarray(lam, dtype=float) ** 2 / T
 
 
+def mp_upper_edge(sigma2, N, T):
+    """Marchenko-Pastur upper edge, lam_+ = sigma2 * (1 + sqrt(N/T))^2.
+
+    The largest eigenvalue a pure-noise sample covariance produces in the
+    N, T -> infinity limit at fixed aspect ratio q = N/T. Anything above it is
+    inconsistent with noise.
+
+    Marchenko & Pastur (1967); applied to financial correlation matrices by
+    Laloux, Cizeau, Bouchaud & Potters, "Noise dressing of financial
+    correlation matrices", PRL 83 (1999) 1467, which is ref [8] of
+    arXiv:1108.4258 -- the same lineage as the instrument itself.
+    """
+    if sigma2 <= 0 or N <= 0 or T <= 0:
+        raise ValueError(f"need positive sigma2, N, T; got {sigma2}, {N}, {T}")
+    return float(sigma2 * (1.0 + np.sqrt(N / T)) ** 2)
+
+
+def q_from_mp_edge(evals, T, tol=1e-13, max_iter=100):
+    """Choose Q by counting sample eigenvalues that clear the MP edge.
+
+    Returns (Q, edge, sigma2).
+
+    The noise level has to be estimated from the data, but the factors inflate
+    any naive average, so sigma2 is re-estimated from the sub-edge bulk alone
+    and iterated to a fixed point. Standard practice in the denoising
+    literature; converges in a handful of steps.
+
+    This removes Q as a free parameter -- it needs only the observed spectrum
+    and T. It carries one assumption that must be checked, not assumed: the
+    bulk has to actually be noise. Fed a spectrum whose bulk is genuine spread
+    structure, this correctly refuses to call it noise and returns a large Q.
+    See stage1/README.md, regime 3.2.
+    """
+    evals = np.asarray(evals, dtype=float)
+    if evals.ndim != 1 or evals.size == 0:
+        raise ValueError("evals must be a non-empty 1-D array")
+    if np.any(evals < 0):
+        raise ValueError("eigenvalues of a covariance matrix cannot be negative")
+    N = evals.size
+    sigma2 = float(evals.mean())
+    for _ in range(max_iter):
+        bulk = evals[evals <= mp_upper_edge(sigma2, N, T)]
+        if bulk.size == 0:
+            break
+        new = float(bulk.mean())
+        if abs(new - sigma2) < tol:
+            sigma2 = new
+            break
+        sigma2 = new
+    edge = mp_upper_edge(sigma2, N, T)
+    return int((evals > edge).sum()), edge, sigma2
+
+
 def d_random_subspaces(P, Q, N, convention="normalised", n=200001):
     """Accidental-overlap benchmark for two uniformly random subspaces.
 

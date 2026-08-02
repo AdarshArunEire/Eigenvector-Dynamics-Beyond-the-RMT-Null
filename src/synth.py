@@ -81,6 +81,49 @@ def perturb_top(lam, n_top, sigma, rng):
     return out
 
 
+def rotate_basis(Q, i, j, theta):
+    """Rotate the basis by `theta` in the (i, j) plane. Returns Q @ G.
+
+    Column i becomes cos(theta) q_i + sin(theta) q_j, column j becomes
+    -sin(theta) q_i + cos(theta) q_j; every other column is untouched. The
+    result is still orthonormal, and pairing it with the *unchanged* spectrum
+    keeps the eigenvalue ordering intact.
+
+    Whether this moves D at all depends entirely on where i and j sit relative
+    to the P/Q split:
+
+    - both inside the top-P block: the span is unchanged, D stays 0. Pure
+      relabelling.
+    - i inside P, j in the P..Q buffer: the tilted direction is still inside the
+      outer block, so D stays 0. This is what Q > P buys.
+    - i inside P, j at or past Q: exactly one principal angle equals theta, so
+      D = -ln(cos theta) / P, known in closed form.
+
+    That last case is the only one that injects anything, which is why regime 3
+    tests all three before sweeping.
+    """
+    Q = np.asarray(Q, dtype=float)
+    n = Q.shape[1]
+    if not (0 <= i < n and 0 <= j < n) or i == j:
+        raise ValueError(f"need distinct 0 <= i,j < {n}, got i={i} j={j}")
+    G = np.eye(n)
+    c, s = np.cos(theta), np.sin(theta)
+    G[i, i] = c
+    G[j, j] = c
+    G[i, j] = -s
+    G[j, i] = s
+    return Q @ G
+
+
+def d_injected(theta, P):
+    """Subspace distance produced by a single Givens rotation past the Q block.
+
+    One principal angle is theta and the remaining P-1 are zero, so
+    D = -(1/P) sum_k ln cos(theta_k) collapses to -ln(cos theta) / P.
+    """
+    return float(-np.log(np.cos(theta)) / P)
+
+
 def gaussian_returns(C, T, rng):
     """N x T draws from N(0, C). True mean is zero, so do not demean."""
     L = np.linalg.cholesky(C)
