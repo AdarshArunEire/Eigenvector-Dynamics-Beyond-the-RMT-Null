@@ -253,7 +253,7 @@ The practical consequence is that one remedy covers both. `standardise` divides 
 
 ### Regime 3.1 — is subtracting $D_{th}$ legitimate?
 
-**What's being tested:** The method is to compute $\operatorname{Excess} = D_{emp} - D_{th}$, and I want to confirm it is a real signal of rotation. Specifically, does additivity hold? Do noise-rotation and real-rotation combine by simple addition?
+**What's being tested:** The method is to compute $\mathrm{Excess} = D_{emp} - D_{th}$, and I want to confirm it is a real signal of rotation. Specifically, does additivity hold? Do noise-rotation and real-rotation combine by simple addition?
 
 **Setup:** A Givens rotation rotates modes $i$ and $j$ by angle $\theta$, so the new eigenvector $i$ is $\cos(\theta)q_i + \sin(\theta)q_j$. That gives $D_{inject} = -\ln(\cos(\theta))/P$. What I want to see is $D_{emp} \approx D_{th} + D_{inject}(\theta)$, and where additivity breaks: it must, as $\ln\cos(\theta)$ diverges as $\theta \rightarrow \pi/2$.
 
@@ -415,11 +415,11 @@ I sure hope so.
 **What's being tested:** The next stage needs a geometry for learning. I intially selected the Grassmann manifold $\mathrm{Gr}(N,P)$. If the eigenspace just moved in one direction, does its next movement tend to continue in that direction?
 
 **Setup:** At the current subspace $Y_t$, construct 
-$$H_t^-=-\operatorname{Log}_{Y_t}(Y_{t-h}),\qquad
-H_t^+=\operatorname{Log}_{Y_t}(Y_{t+h}).$$
+$$H_t^-=-\mathrm{Log}_{Y_t}(Y_{t-h}),\qquad
+H_t^+=\mathrm{Log}_{Y_t}(Y_{t+h}).$$
 These are incoming and outgoing velocities in the same tangent space. That gives us:
 - The learnability gate: cosine similarity between $H_t^-$ and $H_t^+$.
-- The mandatory non-ML forecast: $\widehat Y_{t+h}=\operatorname{Exp}_{Y_t}(H_t^-)$.
+- The mandatory non-ML forecast: $\widehat Y_{t+h}=\mathrm{Exp}_{Y_t}(H_t^-)$.
 
 **Verdict:** Yesterday’s rotation direction contains directional information about the next rotation. However, “Repeat yesterday’s entire rotation” is a terrible forecast everywhere. 
 

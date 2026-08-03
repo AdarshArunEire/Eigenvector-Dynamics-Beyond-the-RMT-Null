@@ -796,7 +796,7 @@ not a literal list of selected companies.
 **What is tested.** Apply Liu & Liu's actual pairwise eigenvector-rotation
 algorithm to every current-window correlation matrix. At the current leading
 space $Y_t$, define the ERSE direction
-$E_t=\operatorname{Log}_{Y_t}(Y_t^{\mathrm{ERSE}})$. Then ask four separate
+$E_t=\mathrm{Log}_{Y_t}(Y_t^{\mathrm{ERSE}})$. Then ask four separate
 questions: does $E_t$ point toward the realised outgoing tangent; how much
 outgoing tangent energy lies along $E_t$; does incoming/outgoing persistence
 survive after both tangents are projected off $E_t$; and how much of the next

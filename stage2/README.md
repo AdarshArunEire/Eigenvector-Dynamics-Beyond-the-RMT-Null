@@ -83,8 +83,8 @@ only $P=3$: the complete nested flag also survives.
 the same direction? At the current space $Y_t$, the incoming and outgoing
 motions are
 
-$$H_t^-=-\operatorname{Log}_{Y_t}(Y_{t-h}),\qquad
-H_t^+=\operatorname{Log}_{Y_t}(Y_{t+h}).$$
+$$H_t^-=-\mathrm{Log}_{Y_t}(Y_{t-h}),\qquad
+H_t^+=\mathrm{Log}_{Y_t}(Y_{t+h}).$$
 
 Their cosine has an ordinary interpretation: $+1$ means exactly the same
 direction, $0$ means no directional information, and $-1$ means reversal.
@@ -155,7 +155,7 @@ literal empirical $O(N^2)$ claim.
 
 **What is tested.** At every current space $Y_t$, compute the leading space of
 Liu & Liu's ERSE correction and its Grassmann direction
-$E_t=\operatorname{Log}_{Y_t}(Y_t^{\mathrm{ERSE}})$. Measure alignment with the
+$E_t=\mathrm{Log}_{Y_t}(Y_t^{\mathrm{ERSE}})$. Measure alignment with the
 realised outgoing tangent, the fraction of outgoing tangent energy attributable
 to $E_t$, and the incoming/outgoing persistence left after projecting both
 tangents off $E_t$. Separately measure the share of the covariance transition

@@ -75,8 +75,8 @@ sign flips and rotations within the same subspace change the matrix without chan
 
 The clean one-step geometry is already standard. At the current subspace $Y_t$, define
 
-$$H_t^-=-\operatorname{Log}_{Y_t}(Y_{t-h}),\qquad
-H_t^+=\operatorname{Log}_{Y_t}(Y_{t+h}).$$
+$$H_t^-=-\mathrm{Log}_{Y_t}(Y_{t-h}),\qquad
+H_t^+=\mathrm{Log}_{Y_t}(Y_{t+h}).$$
 
 Both are elements of the **same** tangent space $T_{Y_t}\mathrm{Gr}(N,P)$. $H_t^-$ is the previous
 velocity parallel-transported to the present; $H_t^+$ is the future velocity to be predicted. This
@@ -84,7 +84,7 @@ immediately gives the non-ML persistence test and the mandatory forecasting base
 
 $$\cos_t=\frac{\langle H_t^-,H_t^+\rangle}
 {\lVert H_t^-\rVert_F\lVert H_t^+\rVert_F},\qquad
-\widehat Y_{t+h}^{\rm cv}=\operatorname{Exp}_{Y_t}(H_t^-).$$
+\widehat Y_{t+h}^{\rm cv}=\mathrm{Exp}_{Y_t}(H_t^-).$$
 
 The second expression is constant-velocity geodesic extrapolation. Inoue & Heath derived this as
 one-step Grassmannian prediction for $P=1$ in 2011. Saad-Falcon, Ancelin & Romberg give the
@@ -100,7 +100,7 @@ is a geometry-aware autoregression in the current tangent space:
 
 $$\widehat H_t=\sum_{j=1}^{L}a_j(x_t)\,
 \Gamma_{t-j\rightarrow t}H_{t-j},\qquad
-\widehat Y_{t+h}=\operatorname{Exp}_{Y_t}(\widehat H_t),$$
+\widehat Y_{t+h}=\mathrm{Exp}_{Y_t}(\widehat H_t),$$
 
 where the transported past velocities supply the admissible directions and a small model learns the
 scalar weights $a_j$ from information available at $t$. This is the data-scarce version of the
@@ -319,7 +319,7 @@ turns out to be more subtle and is the subject of ongoing investigations."* Nine
 Girko linearisation of a block matrix plus two-resolvent local laws. The intersection enters through
 a single scalar
 
-$$t := \frac{T_B\sqrt{q\tilde q}}{N} \in [0,1], \qquad t = \operatorname{Corr}(XX^\top + BB^\top,\; \tilde X\tilde X^\top + BB^\top)$$
+$$t := \frac{T_B\sqrt{q\tilde q}}{N} \in [0,1], \qquad t = \mathrm{Corr}(XX^\top + BB^\top,\; \tilde X\tilde X^\top + BB^\top)$$
 
 where $T_B$ is the shared block length. Their central result is Eq (28), and **at $t = 0$ it reduces
 exactly to BBP 2018.** So `min_lag = T` can be dropped: $t$ is the knob, and every window pair at
