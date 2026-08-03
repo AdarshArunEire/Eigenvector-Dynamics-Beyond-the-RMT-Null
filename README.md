@@ -6,7 +6,7 @@ This project builds and calibrates an eigenvector-overlap instrument, reproduces
 
 ## Current position
 
-**Stage 1 is complete. Stage 2 forecasting is next.**
+**Stage 1**
 
 Synthetic experiments established that excess overlap distance is a reliable measure of genuine rotation once it clears the sampling-noise floor. On S&P 500, Nikkei, DAX and CAC 40 data, Stage 1 then found a directional signal that was coherent across assets and could not be explained away as a by-product of within-window eigenvector shrinkage.
 
