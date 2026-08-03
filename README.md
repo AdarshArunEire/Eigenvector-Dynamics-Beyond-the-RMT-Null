@@ -4,6 +4,8 @@ Do the dominant eigenspaces of covariance matrices genuinely evolve, or does fin
 
 This project builds and calibrates an eigenvector-overlap instrument, reproduces published real-market measurements, and tests whether the remaining rotation contains a signal worth forecasting and learning.
 
+![Stage 1 partial-flag persistence across four equity markets](assets/stage1-flag-signal.png)
+
 ## Current position
 
 **Stage 1**
