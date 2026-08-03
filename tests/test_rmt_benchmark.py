@@ -4,7 +4,8 @@ from src.null_rmt import d_random_subspaces, _random_subspace_mass
 
 
 def test_paper_convention_reproduces_quoted_value():
-    # arXiv:1108.4258 Fig. 2 caption: D_RMT ~ 0.83 for P=5, Q=10, N=204.
+    # arXiv:1108.4258 (short letter) Fig. 2 caption: D_RMT ~ 0.83 for
+    # P=5, Q=10, N=204. Quoted there, not in arXiv:1203.6228.
     assert d_random_subspaces(5, 10, 204, "paper") == pytest.approx(0.8275, abs=2e-3)
 
 

@@ -125,9 +125,54 @@ def d_injected(theta, P):
 
 
 def gaussian_returns(C, T, rng):
-    """N x T draws from N(0, C). True mean is zero, so do not demean."""
+    """N x T draws from N(0, C).
+
+    The true mean is zero here, so demeaning is unnecessary -- but
+    `sample_covariance` demeans by default anyway, since real returns drift and
+    a default chosen for simulated data should not be the one that reaches
+    them. The cost on these worlds is O(1/T); see that docstring.
+    """
     L = np.linalg.cholesky(C)
     return L @ rng.standard_normal((C.shape[0], T))
+
+
+def student_returns(C, T, nu, rng):
+    """N x T draws from a multivariate Student-t with nu d.o.f. and covariance exactly C.
+
+    A multivariate Student is a Gaussian whose overall scale is itself random, and
+    critically the scale is drawn ONCE PER DAY and shared by every name:
+
+        r_t = z_t * sqrt((nu - 2) / w_t),    z_t ~ N(0, C),   w_t ~ chi2_nu
+
+    The (nu - 2) normalisation is what makes Cov(r) = C rather than C*nu/(nu-2),
+    since E[1/w] = 1/(nu - 2). Without it the spectrum moves and the fat-tail
+    effect gets tangled up with a scale change.
+
+    Marginal kurtosis is 3(nu-2)/(nu-4), so nu -> infinity is Gaussian and
+    nu -> 4+ has divergent fourth moment. Below nu = 4 this generator still runs
+    but every formula downstream of it is meaningless, so it refuses.
+
+    This is the world Eq (4.7) of arXiv:1203.6228 describes: the null distance
+    picks up a factor (nu-2)/(nu-4) and nothing else changes.
+    """
+    if nu <= 4:
+        raise ValueError(f"need nu > 4 for a finite fourth moment, got {nu}")
+    L = np.linalg.cholesky(C)
+    z = L @ rng.standard_normal((C.shape[0], T))
+    w = rng.chisquare(nu, size=T)
+    return z * np.sqrt((nu - 2.0) / w)[None, :]
+
+
+def student_factor(nu):
+    """(nu-2)/(nu-4): the factor Eq (4.7) puts in front of the Gaussian null.
+
+    Identically E[s^2]/E[s]^2 for the scale s = (nu-2)/w, w ~ chi2_nu -- i.e. the
+    SAME quantity as the 1 + CV^2 of regime 2.3, applied to a scale that is
+    redrawn every day instead of drifting slowly across the window.
+    """
+    if nu <= 4:
+        raise ValueError(f"need nu > 4, got {nu}")
+    return (nu - 2.0) / (nu - 4.0)
 
 
 def returns_fixed_basis(Q, lam_path, T, rng):

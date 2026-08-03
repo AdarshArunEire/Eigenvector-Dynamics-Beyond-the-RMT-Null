@@ -60,7 +60,7 @@ def mp_upper_edge(sigma2, N, T):
     Marchenko & Pastur (1967); applied to financial correlation matrices by
     Laloux, Cizeau, Bouchaud & Potters, "Noise dressing of financial
     correlation matrices", PRL 83 (1999) 1467, which is ref [8] of
-    arXiv:1108.4258 -- the same lineage as the instrument itself.
+    arXiv:1203.6228 -- the same lineage as the instrument itself.
     """
     if sigma2 <= 0 or N <= 0 or T <= 0:
         raise ValueError(f"need positive sigma2, N, T; got {sigma2}, {N}, {T}")
@@ -77,11 +77,18 @@ def q_from_mp_edge(evals, T, tol=1e-13, max_iter=100):
     and iterated to a fixed point. Standard practice in the denoising
     literature; converges in a handful of steps.
 
-    This removes Q as a free parameter -- it needs only the observed spectrum
-    and T. It carries one assumption that must be checked, not assumed: the
-    bulk has to actually be noise. Fed a spectrum whose bulk is genuine spread
-    structure, this correctly refuses to call it noise and returns a large Q.
-    See stage1/README.md, regime 3.2.
+    WITHDRAWN as a selection rule -- see BUILDNOTES.md, regime 3.2. Marchenko-
+    Pastur assumes i.i.d. entries with a common scale. Regime 1.5 shows real
+    returns carry a scale factor that is shared across the cross-section and
+    redrawn daily, which makes the sample spectrum a MIXTURE of MP laws rather
+    than one of them. The edge is then in the wrong place and the count above it
+    is not a signal count. On my panels this rule returned Q = 24 of 175 (US)
+    and Q = 57 of 132 (Nikkei), which I read as "the bulk is not noise" and
+    which may simply have been the tails.
+
+    Left here because the arithmetic is correct and the fixed-point iteration is
+    reusable, but nothing that produces a reported number calls it. Standardise
+    at window=1 first if you intend to revive it.
     """
     evals = np.asarray(evals, dtype=float)
     if evals.ndim != 1 or evals.size == 0:
@@ -114,10 +121,11 @@ def d_random_subspaces(P, Q, N, convention="normalised", n=200001):
     P singular values. This is what subspace_distance() computes.
 
     convention='paper' divides by beta*pi, reproducing the (unnumbered) D_RMT
-    display on p.2 of arXiv:1108.4258 and the 0.83 quoted in its Fig. 2 caption
+    display in section 2 of arXiv:1203.6228, and the 0.83 quoted in the Fig. 2
+    caption of the short letter version (arXiv:1108.4258)
     for (P,Q,N) = (5,10,204). That paper only quotes the formula; it originates
     in its ref [6], Bouchaud, Laloux, Miceli & Potters, EPJB 55 (2007) 201.
-    Note this is NOT Eq (9) of arXiv:1108.4258 -- Eq (9) is the eigenvalue
+    Note this is NOT the eigenvalue variogram of section 4 -- that one is the
     variogram implemented above. That density carries mass
     alpha/beta = P/Q, so the value is P/Q times the normalised one. Provided for
     cross-checking against the paper only -- do not compare it against your own

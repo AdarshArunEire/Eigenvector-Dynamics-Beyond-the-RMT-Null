@@ -22,6 +22,7 @@ Correctness, not science. Nothing here is a finding.
 import numpy as np
 import pytest
 
+from src.data import to_correlation_panel
 from src.overlap import spectral, sample_covariance, subspace_distance
 from src.null_rmt import mp_upper_edge, q_from_mp_edge
 from src.synth import (spd_from_spectrum, factor_spectrum, rotate_basis,
@@ -84,6 +85,60 @@ def test_mp_edge_refuses_a_bulk_that_is_not_noise():
     lam = factor_spectrum(N, FACTORS)          # linspace bulk, 1.3 -> 0.4
     Q, _, _ = q_from_mp_edge(lam, T)
     assert Q > 3 * len(FACTORS), f"expected MP to reject this bulk, got Q={Q}"
+
+
+def test_mp_edge_over_counts_when_residual_variances_spread():
+    """The limit that matters on real data, and that the flat-bulk test hides.
+
+    A flat bulk is the homogeneous case, which is precisely where MP is exact.
+    Give the names heterogeneous factor loadings -- so their residual variances
+    differ, as real equities do -- and the bulk widens beyond the edge, and the
+    criterion reports a large part of the spectrum as signal.
+
+    Three true factors throughout. Q climbs with the spread, so the edge is a
+    starting point on real data, not an answer.
+    """
+    rng = np.random.default_rng(1)
+    n, t, factors = 111, 2765, 3
+    f = rng.normal(0, 1, (factors, t))
+    found = []
+    for beta_sd in (0.05, 0.25, 1.00):
+        load = np.c_[rng.normal(1.0, beta_sd, n),
+                     rng.normal(0.0, beta_sd, n),
+                     rng.normal(0.0, beta_sd, n)]
+        panel = load @ f + rng.normal(0, 1, (n, t))
+        evals, _ = spectral(sample_covariance(to_correlation_panel(panel)))
+        found.append(q_from_mp_edge(evals, t)[0])
+    assert found[0] == factors, found          # homogeneous: exact
+    assert found[-1] > 10 * factors, found     # heterogeneous: badly over-counts
+    assert found == sorted(found), found       # monotone in the spread
+
+
+def test_correlation_scaling_is_required_before_the_edge():
+    """Volatility spread across names breaks the edge on a raw covariance.
+
+    MP describes variables of a common variance. Real names differ in
+    volatility by factors of several, which widens the bulk on its own, so the
+    edge must be taken on the correlation matrix.
+    """
+    rng = np.random.default_rng(0)
+    n, t = 111, 2765
+    vols = np.exp(rng.normal(np.log(0.02), 0.5, n))
+    panel = (rng.normal(0, 1, (n, 3)) @ rng.normal(0, 1, (3, t)) * 0.5
+             + rng.normal(0, 1, (n, t))) * vols[:, None]
+    raw = q_from_mp_edge(spectral(sample_covariance(panel))[0], t)[0]
+    corr = q_from_mp_edge(
+        spectral(sample_covariance(to_correlation_panel(panel)))[0], t)[0]
+    assert corr < raw / 2, (corr, raw)
+
+
+def test_to_correlation_panel_gives_unit_variance_rows():
+    rng = np.random.default_rng(3)
+    panel = rng.normal(0, 1, (20, 500)) * np.exp(rng.normal(0, 1, (20, 1)))
+    out = to_correlation_panel(panel)
+    assert out.std(axis=1, ddof=1) == pytest.approx(np.ones(20))
+    with pytest.raises(ValueError, match="zero variance"):
+        to_correlation_panel(np.zeros((3, 10)))
 
 
 def test_q_from_mp_edge_rejects_impossible_input():

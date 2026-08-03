@@ -1,5 +1,6 @@
 numpy>=1.26
 pandas>=2.0
 matplotlib>=3.8
-yfinance>=0.2.40
+yfinance>=1.5.2
 pytest>=8.0
+pyarrow>=25.0.0
