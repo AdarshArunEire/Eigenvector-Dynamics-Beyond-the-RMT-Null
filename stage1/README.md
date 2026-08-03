@@ -1,20 +1,72 @@
-# Stage 1 — Instrument
+# Stage 1 — Instrument and forecast-entry gates
 
-Correctness, not science. Nothing in this stage is a finding.
+**Current status:** synthetic calibration, the 2000–2010 paper replication and
+the full-history direction, coherence, ERSE-attribution and partial-flag gates
+are complete through Regime 4.7. Stage 2 model fitting has not started, but its
+master target is now frozen as $\mathrm{Flag}(N;1,3,6)$. The sub-universe
+coherence scaling test remains necessary for a literal scaling claim; it is no
+longer a blocker to fitting the first chronological forecast.
 
-**Entry condition:** Stage 0 exit gate met (spectral theorem usable without
-reference; literature checks 2 and 3 written up).
+## Scope — what counts as stage 1
 
-**Exit gate:** regimes 1-3 pass; power curve recorded; `D_emp > D_th`
-reproduced on real equity data with the qualitative `T* ~ 2yr` peak present.
+Stage 1 contains everything required before fitting a forecast:
 
-**Status:** regimes 1 and 2 pass, but regime 2 leaves two items open rather than
-closed: the estimated-spectrum substitution error has no portable law and no
-working correction (2.2), and within-window level drift inflates `D` with no
-rotation present (2.3). Both are `T`-dependent, and they pull in opposite
-directions along the axis `T*` is read off.
+1. Regimes 1–3 calibrate the overlap instrument in synthetic worlds where the
+   truth is known.
+2. Regimes 4.1–4.3 reproduce the published real-data measurements on frozen
+   2000–2010 panels.
+3. Regimes 4.4–4.7 use separate full-history panels through the latest 2026
+   observation to ask whether a learnable and economically interpretable label
+   exists.
 
-**Failure route:** none. If this fails, the code is wrong. Fix it.
+No fitted forecast belongs to Stage 1. Regimes 4.4–4.5 are empirical findings,
+but they are entry gates rather than ML results.
+
+| date | regimes | what |
+|---|---|---|
+| 2026-08-01 | 1.1–1.5, 2.1–2.3, 3.1–3.2 | synthetic calibration: null, confounds, additivity, power, block choice |
+| 2026-08-02 | 4.1–4.6 | real panels: eigenvalue variogram, subspace variogram, `T*`, tangent persistence, coherence, ERSE attribution |
+| 2026-08-03 | 4.7 | partial-flag persistence, coherence and ERSE-residual validation at dimensions 1, 3 and 6 |
+
+### Current verdict
+
+- **Instrument:** pass. Under a static population covariance, measured rotation
+  matches the finite-window null; injected rotation adds to that null and is
+  recovered once it clears the detection floor.
+- **Heavy tails and within-window volatility:** characterised. Standardising
+  each day by its cross-sectional volatility removes the common-scale
+  inflation without fitting a Student parameter. This is the primary real-data
+  specification.
+- **Block choice:** the adaptive hypothesis failed. A spectral-gap rule chooses
+  $P=1$ and is exactly blind to lower-mode rotations. $P=3$ is a documented
+  coverage/noise compromise, not an optimum. The MP edge recovers $Q$ only in
+  its ideal homogeneous-noise world and is not a credible real-data signal
+  count. Existing $D(P,Q)$ experiments retain fixed $P=3,Q=6$; Regimes
+  4.4–4.6 use $P=3$, and Regime 4.7 promotes $(1,3,6)$ to a partial flag.
+- **Direction:** pass on all four full-history panels. The preceding tangent
+  direction contains information, but repeating its full length is 47–67%
+  worse than holding the current subspace fixed. The S&P result is exploratory
+  because it currently has only 20 shuffle-null repetitions.
+- **Coherence:** pass against the independently timed loading-history null on
+  all four panels. The common component is broadest on S&P and weakest on CAC.
+- **ERSE attribution:** pass for the claim that the directional signal is not
+  ERSE rearranged. ERSE explains only 0.05–0.92% of outgoing tangent energy and
+  removing that direction leaves the persistence cosine essentially unchanged.
+  ERSE itself is a poor future-subspace forecast on these daily panels.
+- **Flag target:** pass. The nested market/core/buffer state
+  $\mathrm{Flag}(N;1,3,6)$ preserves significant persistence and coherence on
+  Nikkei, DAX and CAC; S&P is strongly sign-consistent but exploratory at its
+  current 20-null resolution. The outer six-space is weaker than the market
+  and top-three spaces on DAX and CAC, so it is a containing buffer rather than
+  an equally strong standalone target.
+- **Not yet established:** whether the coherence result scales with universe
+  size and whether a chronologically held-out damped predictor improves
+  subspace or covariance risk. The first is a mechanism-claim check; the second
+  is now the first Stage 2 experiment.
+
+See the [Stage 2 forecast-entry report](../stage2/README.md) for the model-facing
+interpretation and [BUILDNOTES](../BUILDNOTES.md) for the chronological
+experimental notebook.
 
 ## Notation
 
@@ -25,6 +77,8 @@ directions along the axis `T*` is read off.
 | `q = N/T` | aspect ratio; parameters per observation. `q -> 0` data-rich, `q = 1` as many assets as days | lower is better |
 | `P` | size of the inner eigenvector block being tracked | — |
 | `Q` | size of the outer block it is compared against, `Q >= P` | — |
+| `Y_t` | leading $P$-space at time $t$, a point on $\mathrm{Gr}(N,P)$ | — |
+| `H_t^-`, `H_t^+` | incoming and outgoing Grassmann tangent velocities at $Y_t$ | alignment is more learnable |
 | trials | Monte Carlo repetitions of a whole experiment | better — pure precision, costs only compute |
 
 `N`, `T`, `P`, `Q` describe the problem. `trials` describes the measurement of
@@ -41,12 +95,34 @@ it, and is the only one of the five that is free to increase. Easy to conflate
 | 1.2 | Eq (9) eigenvalue variogram | Empirical `<(λs-λt)²>` matches `4λ²/T` | Within 20% for the top 3 modes | **Pass** |
 | 1.3 | Excess scales as 1/T, no floor | `D(T=1000)/D(T=4000) = 4` | 4.0 within 15% | **Pass** |
 | 1.4 | `D_RMT` benchmark | Reproduces the paper's 0.83 at (5,10,204) | 0.8275, paper convention | **Pass** |
+| 1.5 | Heavy-tailed null | Student common-scale inflation follows $(\nu-2)/(\nu-4)$ and can be removed without fitting $\nu$ | Mean inflation follows the prediction; daily cross-sectional standardisation removes its $\nu$ dependence | **Pass** |
 | 2.1 | Regime 2 — fixed eigenvectors, time-varying eigenvalues | `D_num ≈ D_th` | ratio 1.0015 at `sigma=0.06`; pooled 1.005 ± 0.003 over 4000 trials | **Pass** |
-| 2.2 | Estimated spectrum substituted for the true one | Bias small and shrinking in `T` | Under 1.5% at `N/T < 0.3` for `N=40`, but −11.5% by `N/T=0.89`, and sign-flips with `N`. No portable law; bootstrap correction fails. | **Open — measure in situ at regime 4's settings** |
-| 2.3 | Common eigenvalue drift *within* a window | Eq (10) fails; `D` inflated | Inflated by `1 + h²/3`, matched to 2% at `h=0.6, 0.8` | **Pass (breaks as predicted)** |
-| 3.1 | Regime 3 — injected drift | Recovers injected magnitude | not run | — |
-| 3.2 | Label granularity (Amendment 3) | Adaptive-gap blocks beat fixed and per-mode on recovery variance | not run | — |
-| 4.1 | Nikkei reproduction | `D_emp > D_th`, ratio peaks near τ ≈ 500d | not run | — |
+| 2.2 | Estimated spectrum substituted for the true one | Bias small and shrinking in `T` | Sign and size depend on the sampled spectral geometry; no portable law and bootstrap correction fails | **Characterised, not corrected** |
+| 2.3 | Common eigenvalue drift *within* a window | Eq (10) fails; `D` inflated | Inflation is $\langle c^2\rangle/\langle c\rangle^2$; daily standardisation removes the common-scale mechanism synthetically and on real panels | **Confound found and controlled** |
+| 3.1 | Regime 3 — injected drift | Recovers injected magnitude | `D_emp = D_th + D_inject` to 2% over a 300x range of theta, 0.1% once clear of the floor | **Pass** |
+| 3.2 | Automatic block choice | Adaptive $P$ and MP-edge $Q$ remove the fixed block choice | Gap-based $P$ chooses 1 and misses lower-mode rotations; MP $Q$ works only under a homogeneous-noise bulk and explodes on real spectra | **Fail — retain explicit fixed blocks** |
+| 4.1 | Eigenvalue variogram reproduction | Reproduce the overlap artifact and excess eigenvalue motion | Windowing shape reproduced; standardised S&P clears the null, small $T=N$ panels do not | **Pass for replication; small panels inconclusive** |
+| 4.2 | Subspace variogram | Excess grows with lag if the population space evolves | S&P excess grows after overlap saturates; static-offset reading rejected there | **Pass on S&P** |
+| 4.3 | Optimal measurement window | Reproduce the U-shaped $D_{emp}(T)$ curve | U-shape appears on all panels; minima are imprecise because fewer than three independent pairs support them | **Shape reproduced; location uncertain** |
+| 4.4 | Tangent persistence | $H_t^-$ aligns with $H_t^+$ beyond a matched calendar-shuffle null | Direction passes on all full-history panels (S&P exploratory at 20 nulls); unit-speed forecast loses to static everywhere | **YAY direction; NAY full step** |
+| 4.5 | Cross-asset coherence | Common tangent component exceeds independently timed loading histories | Passes on all panels under 999 synchrony-null repetitions | **YAY; sub-universe scaling remains** |
+
+## Reproduction map
+
+Run from the repository root:
+
+| Regime | Command |
+|---|---|
+| 1.1–1.4 | `python -m pytest tests/test_regime1_static.py tests/test_overlap_properties.py tests/test_rmt_benchmark.py -q` |
+| 1.5 | `python scripts/regime1_5_student.py` |
+| 2.1–2.3 | `python -m pytest tests/test_regime2_varying_eigenvalues.py -q` |
+| 3.1 | `python -m pytest tests/test_regime3_injected_drift.py -q` |
+| 3.2 | `python -m pytest tests/test_regime3_2_block_choice.py -q` |
+| 4.1 | `python scripts/regime4_1_variogram.py --label nikkei` |
+| 4.2 | `python scripts/regime4_2_subspace.py --label sp500` |
+| 4.3 | `python scripts/regime4_3_tstar.py --label nikkei` |
+| 4.4 | `python scripts/regime4_4_tangent.py --label nikkei_full --T 250 --mode standardised --shuffles 99 --no-plot` |
+| 4.5 | `python scripts/regime4_5_coherence.py --label nikkei_full --T 250 --shuffles 999` |
 
 ## Regime 1 status — passing
 
@@ -129,8 +205,8 @@ that was noise, and −1.07% ± 0.18% is the settled value.)
 
 The relative bias falls roughly as `1/T`, i.e. an absolute correction of order
 `T^(-2)` — steeper than advertised. **This law holds only for `N/T` below about
-0.3, and regime 4 does not run there.** Extending the sweep towards the ratio
-regime 4 actually uses:
+0.3, while the paper-replication panels use `T=N`.** Extending the sweep towards
+the ratio used by that replication:
 
 | `T` | `N/T` | measured bias | `1/T` law predicts |
 |-----|-------|---------------|--------------------|
@@ -366,10 +442,13 @@ Since realised volatility plainly varies inside any multi-year window, this is a
 live mechanism on real data, not a synthetic curiosity, and it is not something
 `D_emp > D_th` alone can distinguish from genuine rotation.
 
-**Open, carried into stage 2:** an `h` of only 0.35 buys a 4% inflation, which
-is the same order as the ratios regime 4 will be trying to interpret. Either the
-within-window level drift has to be measured and divided out, or the excess has
-to be shown to survive a variance-standardised return series. Not resolved here.
+**Resolved operationally in Regimes 1.5 and 4:** daily cross-sectional
+standardisation divides out this common scale before estimating a window. In
+the synthetic drift experiment it reduces a 183% inflation to 1.3%, and it also
+removes the Student common-scale inflation. The real-panel analyses therefore
+report the standardised series as the primary specification. This controls the
+specific common-scale mechanism derived here; it does not claim that all forms
+of covariance nonstationarity have disappeared.
 
 ### Drift confined to the top block does nothing
 
@@ -380,14 +459,251 @@ fixed the time-average factorises as `<λ_i> λ_j` and the drift cancels exactly
 Only drift that is common to both sides of the `P/Q` split can break the
 factorisation. Recorded because the null result is misleading on its own.
 
+## Regime 3 status — 3.1 passing, 3.2 answered in the negative
+
+Run: `python -m pytest tests/test_regime3_injected_drift.py tests/test_regime3_2_block_choice.py -q`.
+
+Regimes 1 and 2 asked whether the instrument reports rotation when there is
+none. Regime 3 asks the mirror question, and in doing so tests the one
+assumption the other two structurally could not.
+
+### Two different worlds, deliberately
+
+The numbers in 3.1 and 3.2 are not comparable, and the difference is not an
+oversight:
+
+| | 3.1 | 3.2 |
+|---|---|---|
+| bulk | `linspace(1.3, 0.4)`, as regimes 1 and 2 | flat at 1.0 |
+| injection | single Givens plane | whole block |
+| `D_inject` | `-ln(cos theta) / P` | `-ln(cos theta)` |
+
+3.1 continues the established world so its results sit alongside regimes 1 and
+2. 3.2 needs a bulk that is genuinely sampling noise, because the
+Marchenko-Pastur edge is meaningless otherwise — see below. And 3.2 needs an
+injection whose cost does not depend on `P`, or the comparison it exists to
+make is rigged before it starts.
+
+Consequently, the raw detection angles from 3.1 and 3.2 should not be compared
+as though one superseded the other: they describe different spectra and
+different injected events.
+
+### 3.1 — what the subtraction rests on
+
+Every result downstream is `excess = D_emp - D_th`. That subtraction assumes
+**additivity**: that noise-rotation and real-rotation combine by addition.
+There is a reason to expect it, since for small angles
+`D = -(1/P) sum_k ln cos(theta_k) ~ (1/2P) sum_k theta_k^2` and squared angles
+from independent sources add. But "approximately, for small angles" is doing
+the work in that sentence, and regimes 1 and 2 both had zero signal, so the
+assumption never had to hold.
+
+Injection is a single Givens rotation, chosen so the truth is known in closed
+form rather than simulated: exactly one principal angle equals `theta` and the
+rest are zero, giving `D_inject = -ln(cos theta) / P`.
+
+Settings: regime 1's spectrum, `N, P, Q, T = 40, 3, 6, 2000`, mode 0 rotated
+into mode 10, 300–400 trials.
+
+| `theta` | `D_inject` | predicted | `D_emp` | ratio | recovery |
+|---|---|---|---|---|---|
+| 0.00 | — | 0.001930 | 0.001967 | 1.019 | — |
+| 0.05 | 0.000417 | 0.002347 | 0.002395 | 1.021 | 1.115 |
+| 0.10 | 0.001669 | 0.003599 | 0.003656 | 1.016 | 1.034 |
+| 0.20 | 0.006712 | 0.008642 | 0.008710 | 1.008 | 1.010 |
+| 0.30 | 0.015231 | 0.017160 | 0.017232 | 1.004 | 1.005 |
+| 0.80 | 0.120464 | 0.122394 | 0.122257 | 0.999 | 0.999 |
+
+Additivity holds to 2% across a 300-fold range of injected magnitude, tightening
+to 0.1% once the injection clears the noise floor. **The subtraction is
+legitimate.**
+
+The residual is a roughly constant *absolute* offset of about 3% of `D_th` —
+the same `O(1/T^2)` positive bias regime 1 showed at +0.25% and regime 2 at
++0.5%. A fixed offset matters proportionally more the smaller the quantity it
+is divided by, which is the whole of the `recovery` column: 1.115 at
+`theta=0.05`, 1.010 at `theta=0.20`. Near the detection floor, recovered
+magnitude runs about 10% high. This does **not** affect the detection threshold
+below, because that threshold is derived from a null distribution carrying the
+same offset, so it cancels.
+
+Verified out to `theta = 0.8` rad (46 degrees). Beyond that, untested.
+
+### Guarding the injection
+
+Three noiseless checks run before any sweep, because an injection that injects
+nothing produces a clean-looking null result:
+
+| rotate mode 0 into | where it lands | `D` |
+|---|---|---|
+| mode 1 | inside the top-`P` block | 0 |
+| mode 4 | the `P..Q` buffer | 0 |
+| mode 10 | past `Q` | `-ln(cos theta)/P`, exactly |
+
+The middle row is the only direct evidence in the project that `Q > P` does
+what it is supposed to. A fourth test pins the boundary itself: rotation into
+mode `Q-1` is invisible, into mode `Q` it is not.
+
+### Power curve — settled calibration
+
+Not a hypothesis and so not a ledger row — a recorded characterisation, and the
+exit gate's third condition. For a **single** pair of windows, set the threshold
+at the 95th percentile of the zero-rotation null (5% false-positive rate), then
+ask what injected angle reaches 80% power. The settled percentile calibration is:
+
+| `T` | Gaussian | Student `nu=12` | `nu=8` | `nu=6` | `nu=6`, standardised |
+|---|---|---|---|---|---|
+| 250 | 15.8° | 18.1° | 21.4° | 28.2° | **17.1°** |
+| 500 | 11.2° | 12.7° | 14.6° | 17.8° | **11.6°** |
+| 1000 | 7.8° | 8.9° | 9.7° | 12.2° | **8.2°** |
+
+The Gaussian column gives `theta_min * sqrt(T) = 250, 249, 247` degree-days,
+the expected `1/sqrt(T)` scaling from `D_inject ~ theta^2/(2P)` against a
+`1/T` floor. Fat tails increase the *upper-tail* detection cost more than the
+mean correction `(nu-2)/(nu-4)` predicts; daily standardisation almost restores
+the Gaussian threshold.
+
+**The honest two-year headline is therefore 11°, not the retired 8° scan.** On
+`nu=6` returns it is 18°, and after standardisation it is 12°. These are
+single-pair thresholds at `N=40, P=3, Q=6`, not transferable panel-wide floors.
+A lagged real-data estimate averages dependent window pairs, so it cannot claim
+a naive `sqrt(n)` improvement without a dependence-aware calibration.
+
+### 3.2 — automatic block choice fails
+
+**The MP edge supplies a deterministic rule only under its noise model.** Its
+upper edge, `lam_+ = sigma^2 (1 + sqrt(N/T))^2`, bounds the sample spectrum of a
+homogeneous noise bulk. `sigma^2` is re-estimated from the sub-edge eigenvalues
+and iterated to a fixed point because factors inflate a naive average. This is
+implemented as `q_from_mp_edge`; it is a useful diagnostic, not an accepted
+real-panel selector.
+
+On a spectrum of six factors over a flat homogeneous bulk at 1.0, it recovers
+`sigma^2 = 1.0000` and `Q = 6`, and picks `Q = 6` from *sample* spectra in
+99.6% of trials. That validates the implementation in the world where the
+criterion applies; it does not eliminate a free parameter on real equities.
+
+This is Marchenko & Pastur (1967) by way of Laloux, Cizeau, Bouchaud & Potters,
+PRL 83 (1999) 1467 — cited by Allez & Bouchaud, arXiv:1203.6228, so the rule comes
+from the instrument's own lineage rather than from outside it.
+
+**Determined is not the same as justified, and the difference shows up on real
+data.** The rule is closed-form and tuning-free whatever spectrum it is handed —
+that property is unconditional. What is conditional is the reading of its
+output as "the number of modes above the noise", because that requires MP's
+noise model, and MP assumes the residual variances are homogeneous.
+
+Two ways real data breaks that, both unit-tested:
+
+- **Volatility spread across names.** MP describes variables of a common
+  variance; equities differ by factors of several. On a raw covariance the
+  criterion collapses `sigma^2` and calls most of the spectrum signal. The edge
+  must be taken on the **correlation** matrix — `to_correlation_panel` — which
+  is what Laloux et al. do. On a synthetic panel with realistic volatility
+  spread this alone moves `Q` from 93 to 37.
+- **Heterogeneous factor loadings.** Even after correlation scaling, unequal
+  loadings leave unequal *residual* variances, which widen the bulk past the
+  edge. Three true factors, `N=111`, `T=2765`:
+
+  | residual variance spread | `Q` reported |
+  |---|---|
+  | 0.03 (homogeneous) | 3 |
+  | 0.13 (realistic betas) | 27 |
+  | 0.29 (adversarial) | 78 |
+
+  The flat-bulk result above is the first row. It validated the criterion under
+  precisely the condition that makes it exact, which real equities do not meet.
+
+Applied to regime 1's `linspace` bulk the procedure returns `Q = 27` for the
+same reason — that bulk is genuine spread structure, not noise.
+
+The edge is therefore retained as a model-check: a very large return says that
+the residual bulk does not resemble homogeneous MP noise. It must **not** then
+be fed back as a huge real-data `Q`, because everything inside the `P..Q` buffer
+is an exact blind spot. The paper's `Q=2P` is not theoretically selected either.
+For the calibrated overlap experiments this project keeps the declared
+`P=3,Q=6`; the paper replication keeps `P=5,Q=10`; the Grassmann tangent tests
+track `P=3` and do not use `Q` at all.
+
+**`P` has no dominating choice.** Detection threshold by block size, `Q = 6`
+fixed by the edge, whole-block injection so `D_inject` is `P`-independent:
+
+| `P` | whole block tilts | only mode 0 | only mode 2 | only mode 4 |
+|---|---|---|---|---|
+| 1 | 1.76° | 1.76° | **blind** | **blind** |
+| 2 | 2.10° | 2.97° | **blind** | **blind** |
+| 3 | 2.58° | 4.46° | 4.46° | **blind** |
+| 4 | 3.04° | 6.07° | 6.07° | **blind** |
+| 5 | 3.49° | 7.80° | 7.80° | 7.80° |
+
+Read the first column alone and `P=1` wins. Read across and that conclusion is
+worthless: `P=1` cannot see rotation in modes 2 or 4 at all — not poorly,
+**exactly zero**, with no noise involved and no quantity of data able to
+recover it. The blindness is exact and is unit-tested without any sampling.
+
+So the trade is sharpness against coverage, and the cost of coverage is
+superlinear. `D_inject` is `P`-independent by construction, so only the noise
+moves, and each mode added to the block sits closer to the bulk with a smaller
+gap:
+
+| mode | `lambda` | noise contribution | vs mode 0 |
+|---|---|---|---|
+| 0 | 25.0 | 1.476 | 1.0x |
+| 1 | 10.0 | 4.198 | 2.8x |
+| 2 | 6.0 | 8.160 | 5.5x |
+| 3 | 4.0 | 15.111 | 10.2x |
+| 4 | 3.0 | 25.500 | 17.3x |
+| 5 | 2.2 | 51.944 | 35.2x |
+
+35-fold across six factors. The `1/P` in `D` cannot damp a term growing that
+fast.
+
+**The ledger bet fails.** Adaptive-gap selection picks `P=1` here, the largest
+log-gap being `ln(25/10) = 0.916` at the very top. And `P=1` is blind in two of
+the three injection scenarios. The gap rule is not arbitrary — Davis-Kahan
+bounds subspace rotation by `||E|| / delta`, so wide gaps genuinely do buy
+stability, and Eq (7) has precisely that shape with the gap in the denominator
+and the noise magnitude on top. But stability is not the objective. A perfectly
+stable block that excludes the rotation you were looking for is worse than a
+noisier one that contains it, and the gap rule cannot see the difference.
+
+**Direction does not matter.** Comparing old-`P`-in-new-`Q` against
+new-`P`-in-old-`Q` gives 1.65 vs 1.63, 2.42 vs 2.45, 2.31 vs 2.26, 3.10 vs 3.06
+degrees. Under 2%, no consistent sign. The asymmetry in `subspace_distance` is
+real but immaterial for detection, so the paper's convention is kept for
+interpretability at no cost.
+
+### Reproduction notes and limits
+
+Every figure above comes from a fixed seed and is reproduced by the test suite;
+the basis is always drawn from `default_rng(20260801)` so the same Haar frame is
+shared across all three regimes.
+
+Two limits worth stating plainly:
+
+- **The block-comparison `theta_min` figures above are approximate and somewhat
+  optimistic.** They are computed
+  from the null distribution via an additivity shortcut — the injection needed
+  is the 95th minus the 20th percentile of the null — rather than by injecting
+  at each angle. Direct spot checks give 74% power where the table claims 80%
+  at `P=1, 1.76 deg`, and 72% at `P=5, 3.49 deg`. Injection widens the
+  distribution as well as shifting it, and the shortcut ignores the widening.
+  Ordering, scaling and the blindness structure are unaffected. Any threshold
+  that leaves this project should be measured directly.
+- **`P=3` is a defensible compromise on this spectrum and nothing more.** It
+  covers the three strongest factors at 2.58 degrees against 1.76 for a `P=1`
+  that watches only the market mode. The number will not transfer to the Nikkei.
+  What transfers is the procedure: locate the factors, choose `P` to cover the
+  ones you care about, and pay the threshold.
+
 ## Note on the `D_RMT` normalisation
 
 `d_random_subspaces` takes a `convention` argument.
 
-- `"paper"` reproduces the unnumbered `D_RMT` display on p.2 of arXiv:1108.4258
+- `"paper"` reproduces the unnumbered `D_RMT` display in §2 of arXiv:1203.6228
   and the 0.83 quoted in its Fig. 2 caption. That paper only quotes the result;
   it originates in its ref [6] (Bouchaud, Laloux, Miceli & Potters, EPJB 55
-  (2007) 201). This is *not* Eq (9) of arXiv:1108.4258 — Eq (9) there is the
+  (2007) 201). This is *not* the eigenvalue variogram of §4 — that one is the
   eigenvalue variogram used in 1.2. The underlying density integrates to `P/Q`,
   not 1.
 - `"normalised"` divides by `alpha*pi` instead of `beta*pi`, integrates to
@@ -396,3 +712,205 @@ factorisation. Recorded because the null result is misleading on its own.
 
 They differ by exactly `P/Q`. Use `"normalised"` when comparing against your own
 measured `D`. Both are unit-tested.
+
+## Regime 4 status — real-panel gates
+
+Regimes 4.1–4.3 use the frozen 2000–2010 panels to reproduce the published
+measurement. Regimes 4.4–4.7 use separate fixed-universe panels through the
+latest 2026 observation to decide whether Stage 2 has a label worth learning.
+
+### 4.1–4.3 — paper replication
+
+**What is tested.** Whether the eigenvalue variogram, subspace variogram and
+U-shaped measurement-error curve can be recovered before making any forecasting
+claim.
+
+**Setup.** Four paper-matched universes, frozen at 2000–2010; correlation
+matrices; raw and daily-standardised returns; the paper's `T=N` convention for
+4.1–4.2 and a sweep over `T` for 4.3. The overlap experiments use `P=5,Q=10`
+when matching Fig. 9.
+
+**Verdict.** **YAY for the replication shape, INCONCLUSIVE for a precise
+universal `T*`.** The rolling-window overlap artifact is reproduced, S&P keeps
+accumulating excess subspace displacement after that artifact saturates, and all
+four panels show the expected U-shape. Fewer than three independent window pairs
+support several minima, so their exact locations are not precise estimates.
+
+### 4.4 — tangent persistence
+
+**What is tested.** At the current leading space `Y_t`, compare the incoming
+Grassmann tangent `H_t^-` with the outgoing tangent `H_t^+`. A cosine of `+1`
+means continuation, `0` means no directional relation and `-1` means reversal.
+The matched shuffle null is essential because overlapping rolling windows create
+some apparent persistence even when long calendar order is destroyed.
+
+**Setup.** Standardised full-history panels; `P=3`; 42-day horizon; 14-day step;
+`T=357` for S&P and `T=250` elsewhere. The null permutes intact 21-day return
+blocks and rebuilds the complete rolling-eigenspace history.
+
+**Verdict.** **YAY for direction; NAY for repeating the full previous step.**
+
+| panel | observed cosine | shuffled cosine | windows with positive cosine | directional `p` | full-step loss versus holding still |
+|---|---:|---:|---:|---:|---:|
+| S&P full | **0.2019** | 0.0506 | 79.8% | 0.0476, exploratory | **47.5% worse** |
+| Nikkei full | **0.1158** | 0.0198 | 72.2% | 0.010 | **67.1% worse** |
+| DAX full | **0.0973** | 0.0237 | 63.6% | 0.010 | **56.2% worse** |
+| CAC full, cleaned | **0.0830** | 0.0217 | 61.6% | 0.020 | **59.9% worse** |
+
+The positive-cosine percentage is the fraction of eligible rolling-window
+triples whose outgoing arrow lies in the same tangent-space half as the incoming
+arrow. It is descriptive, not the significance test. The `p`-value compares the
+*mean cosine* with complete shuffled histories. The final percentage is the
+relative increase in mean containment loss from applying the whole previous
+tangent instead of forecasting no rotation. The arrow points usefully but is
+systematically too long; Stage 2 would need to learn its damping.
+
+### 4.5 — cross-asset coherence
+
+**What is tested.** Whether the tangent motion contains a synchronised
+cross-asset component, rather than merely aggregating company loading changes
+that happen at unrelated times.
+
+**Setup.** Procrustes-align the rolling bases, form each asset's tangent-increment
+history and measure the leading share of the cross-asset covariance. The null
+independently shifts each asset's history, then projects it back into the valid
+tangent space and restores its observed speed. Each panel uses 999 nulls.
+
+**Verdict.** **YAY on all four panels.**
+
+| panel | observed common share | desynchronised null | `p` | leading-vector participation |
+|---|---:|---:|---:|---:|
+| S&P full | **24.36%** | 6.07% | 0.001 | about 125 / 357 names |
+| Nikkei full | **13.71%** | 5.30% | 0.001 | about 41 / 131 |
+| DAX full | **17.56%** | 8.63% | 0.001 | about 9 / 29 |
+| CAC full, cleaned | **14.03%** | 10.10% | 0.021 | about 6 / 23 |
+
+Here the first percentage is the fraction of all tangent-increment variation
+captured by its strongest common cross-asset pattern. The null percentage asks
+how large that share would be if each asset kept the same individual history but
+lost synchrony with every other asset. Participation is an effective breadth,
+not a literal list of selected companies.
+
+### 4.6 — is the directional signal just ERSE rearranged?
+
+**What is tested.** Apply Liu & Liu's actual pairwise eigenvector-rotation
+algorithm to every current-window correlation matrix. At the current leading
+space $Y_t$, define the ERSE direction
+$E_t=\operatorname{Log}_{Y_t}(Y_t^{\mathrm{ERSE}})$. Then ask four separate
+questions: does $E_t$ point toward the realised outgoing tangent; how much
+outgoing tangent energy lies along $E_t$; does incoming/outgoing persistence
+survive after both tangents are projected off $E_t$; and how much of the next
+covariance transition crosses the current top-$P$/complement boundary, which an
+eigenvalue-only update in the current basis cannot create.
+
+**Setup.** The Regime 4.4 full-history specification is unchanged: standardised
+returns, $P=3$, 42-day horizon, 14-day step, $T=357$ for S&P and $T=250$
+elsewhere. ERSE uses Liu & Liu's primary deviation floor $\delta=0.25$; observed
+sensitivity runs use $0.15$ and $0.35$. The matched null permutes intact 21-day
+return blocks and rebuilds the rolling covariance, ERSE correction and tangent
+series. DAX, CAC and Nikkei use 99 null histories; S&P uses 20 and remains
+exploratory. The paper assumes an all-positive correlation matrix, so each run
+also records how often that strict assumption holds rather than silently
+exporting the theorem to these individual-stock panels.
+
+**Verdict.** **YAY: the Regime 4.4 signal is distinct from ERSE. NAY: ERSE is
+not a useful future-subspace forecast here. NAY for evidence that the observed
+top/complement covariance share exceeds its matched null.** The last NAY limits
+the mechanism claim; it does not undo the direct attribution result.
+
+| panel | original cosine (null) | ERSE/outgoing cosine | outgoing energy attributed to ERSE | residual cosine (null) | top/complement covariance share (null) | ERSE forecast skill vs holding still | strict all-positive windows |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| S&P full | **0.2019** (0.0506) | −0.0150 | **0.05%** | **0.2021** (0.0509) | 40.6% (39.9%), $p=0.143$ | **−317.5%** | 0.0% |
+| Nikkei full | **0.1158** (0.0198) | −0.0141 | **0.06%** | **0.1161** (0.0201) | 39.7% (39.4%), $p=0.190$ | **−158.1%** | 3.6% |
+| DAX full | **0.0973** (0.0237) | −0.0119 | **0.92%** | **0.1009** (0.0237) | 38.3% (39.3%), $p=0.960$ | **−128.7%** | 16.0% |
+| CAC full, cleaned | **0.0830** (0.0217) | −0.0072 | **0.22%** | **0.0830** (0.0220) | 37.8% (39.1%), $p=0.980$ | **−143.2%** | 36.6% |
+
+The first and fourth columns are directly comparable: after removing the ERSE
+direction, the directional persistence is not weakened. Its matched upper-tail
+$p$-values are 0.0476 exploratory for S&P, 0.010 for Nikkei and DAX, and 0.020
+for CAC. The ERSE/outgoing cosines are negative on every panel, so ERSE points
+slightly away from the realised future move; a small $p$ attached to “less
+negative than shuffled” on Nikkei or S&P does not change that required-sign
+failure. “Attributed energy” is the squared-length share removed by the
+one-direction projection, not a percentage of windows. The result is robust
+across $\delta=0.15,0.25,0.35$: attributed energy stays between 0.0% and 1.2%
+and the residual cosine remains effectively the original cosine.
+
+Reproduce one panel with, for example:
+
+```bash
+python scripts/regime4_6_erse.py --label nikkei_full --T 250 --P 3 --step 14 --horizon 42 --mode standardised --delta 0.25 --shuffles 99
+```
+
+### 4.7 — does the signal survive in the complete partial flag?
+
+**What is tested.** Whether the market direction, established top-three core
+and six-dimensional collision buffer can be carried together without losing
+the persistence, cross-asset coherence or ERSE-distinctness established in
+Regimes 4.4–4.6. One time snapshot is
+
+$$\mathcal F_t=(Y_t^{(1)}\subset Y_t^{(3)}\subset Y_t^{(6)})
+\in\mathrm{Flag}(N;1,3,6).$$
+
+This is one flag at time $t$, not a container holding every time point. The
+history is the sequence $\{\mathcal F_t\}_t$. Each frame is obtained from one
+top-six eigendecomposition, so nesting is exact; the three Grassmann logarithms
+are then computed separately and retained as a tuple. The flag inner product
+weights level $d$ by $1/d$, preventing the six-space from dominating merely
+because it has more columns. This is a basis-invariant nested-projector
+embedding, not a claim to have implemented the intrinsic quotient-manifold
+flag logarithm.
+
+**Setup.** The same standardised full-history panels, 42-day horizon, 14-day
+step, $T=357$ for S&P and $T=250$ elsewhere. Persistence uses the same 21-day
+calendar-block permutation null; coherence uses 999 independently shifted
+asset histories; ERSE uses $\delta=0.25$ with $0.15$ and $0.35$ sensitivity
+runs. The predeclared family comprises the market level, top-six level and
+complete nested flag, with Holm adjustment. Top three is the already-confirmed
+anchor; the disjoint $2{:}3$ and $4{:}6$ blocks diagnose where a result comes
+from rather than creating extra gates.
+
+**Verdict.** **YAY: the complete flag is a valid Stage 2 representation.**
+Nikkei, DAX and CAC clear both the persistence and coherence gates after Holm
+adjustment. S&P has the largest practical separation from its null but is
+**INCONCLUSIVE confirmatorily** because 20 calendar nulls make its smallest raw
+$p=1/21$ and its smallest three-test Holm value $0.143$. Its coherence result
+is nevertheless decisive. ERSE explains little flag-tangent energy, and the
+residual persistence remains.
+
+| panel | flag cosine (calendar null) | raw / Holm $p$ | coherent share (shift null) | raw / Holm $p$ | ERSE-attributed energy | residual cosine |
+|---|---:|---:|---:|---:|---:|---:|
+| S&P full | **0.1545** (0.0313) | 0.0476 / 0.143, exploratory | **13.05%** (2.54%) | 0.001 / 0.003 | 0.11% | **0.1552** |
+| Nikkei full | **0.0706** (0.0196) | 0.010 / 0.030 | **6.95%** (2.03%) | 0.001 / 0.003 | 0.25% | **0.0721** |
+| DAX full | **0.0561** (0.0217) | 0.020 / 0.040 | **10.98%** (6.51%) | 0.002 / 0.003 | 1.11% | **0.0608** |
+| CAC full, cleaned | **0.0622** (0.0273) | 0.020 / 0.040 | **10.36%** (7.42%) | 0.002 / 0.003 | 1.32% | **0.0630** |
+
+The flag cosine asks whether consecutive complete nested motions point in a
+similar direction. The coherent-share percentage is the fraction of variation
+captured by the strongest synchronised asset pattern, not the fraction of
+windows. ERSE-attributed energy is the squared tangent-length fraction removed
+by projecting off the ERSE direction. Sensitivity over
+$\delta\in\{0.15,0.25,0.35\}$ leaves the residual flag cosine positive and
+essentially unchanged.
+
+The component diagnostics qualify the simple YAY. Nikkei validates every
+level. DAX's raw top-six persistence is a NAY ($p=0.08$), although its residual
+passes after removing ERSE; CAC's top-six result is borderline ($p=0.05$) and
+its residual is just outside ($p=0.06$). Thus $Y^{(6)}$ is justified as a
+learnability/collision buffer inside the flag, but it should not be described
+as equally forecastable on every panel.
+
+Reproduce one confirmatory panel with, for example:
+
+```bash
+python scripts/regime4_7_flag.py --label nikkei_full --T 250 --step 14 --horizon 42 --mode standardised --delta 0.25 --calendar-shuffles 99 --coherence-shuffles 999
+```
+
+### Stage 2 entry decision
+
+**The representation gate is cleared.** Begin with chronological held-out
+baselines on the complete flag, scoring its market, top-three and top-six levels
+separately as well as jointly. The sub-universe coherence scaling test remains
+required before making a literal claim about how coherence scales with $N$; it
+does not need to delay model fitting. Regimes 4.6–4.7 establish a nonredundant
+target, not out-of-sample ML value—the latter is precisely Stage 2's job.

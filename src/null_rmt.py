@@ -50,6 +50,66 @@ def eigenvalue_variogram_null(lam, T):
     return 4.0 * np.asarray(lam, dtype=float) ** 2 / T
 
 
+def mp_upper_edge(sigma2, N, T):
+    """Marchenko-Pastur upper edge, lam_+ = sigma2 * (1 + sqrt(N/T))^2.
+
+    The largest eigenvalue a pure-noise sample covariance produces in the
+    N, T -> infinity limit at fixed aspect ratio q = N/T. Anything above it is
+    inconsistent with noise.
+
+    Marchenko & Pastur (1967); applied to financial correlation matrices by
+    Laloux, Cizeau, Bouchaud & Potters, "Noise dressing of financial
+    correlation matrices", PRL 83 (1999) 1467, which is ref [8] of
+    arXiv:1203.6228 -- the same lineage as the instrument itself.
+    """
+    if sigma2 <= 0 or N <= 0 or T <= 0:
+        raise ValueError(f"need positive sigma2, N, T; got {sigma2}, {N}, {T}")
+    return float(sigma2 * (1.0 + np.sqrt(N / T)) ** 2)
+
+
+def q_from_mp_edge(evals, T, tol=1e-13, max_iter=100):
+    """Choose Q by counting sample eigenvalues that clear the MP edge.
+
+    Returns (Q, edge, sigma2).
+
+    The noise level has to be estimated from the data, but the factors inflate
+    any naive average, so sigma2 is re-estimated from the sub-edge bulk alone
+    and iterated to a fixed point. Standard practice in the denoising
+    literature; converges in a handful of steps.
+
+    WITHDRAWN as a selection rule -- see BUILDNOTES.md, regime 3.2. Marchenko-
+    Pastur assumes i.i.d. entries with a common scale. Regime 1.5 shows real
+    returns carry a scale factor that is shared across the cross-section and
+    redrawn daily, which makes the sample spectrum a MIXTURE of MP laws rather
+    than one of them. The edge is then in the wrong place and the count above it
+    is not a signal count. On my panels this rule returned Q = 24 of 175 (US)
+    and Q = 57 of 132 (Nikkei), which I read as "the bulk is not noise" and
+    which may simply have been the tails.
+
+    Left here because the arithmetic is correct and the fixed-point iteration is
+    reusable, but nothing that produces a reported number calls it. Standardise
+    at window=1 first if you intend to revive it.
+    """
+    evals = np.asarray(evals, dtype=float)
+    if evals.ndim != 1 or evals.size == 0:
+        raise ValueError("evals must be a non-empty 1-D array")
+    if np.any(evals < 0):
+        raise ValueError("eigenvalues of a covariance matrix cannot be negative")
+    N = evals.size
+    sigma2 = float(evals.mean())
+    for _ in range(max_iter):
+        bulk = evals[evals <= mp_upper_edge(sigma2, N, T)]
+        if bulk.size == 0:
+            break
+        new = float(bulk.mean())
+        if abs(new - sigma2) < tol:
+            sigma2 = new
+            break
+        sigma2 = new
+    edge = mp_upper_edge(sigma2, N, T)
+    return int((evals > edge).sum()), edge, sigma2
+
+
 def d_random_subspaces(P, Q, N, convention="normalised", n=200001):
     """Accidental-overlap benchmark for two uniformly random subspaces.
 
@@ -61,10 +121,11 @@ def d_random_subspaces(P, Q, N, convention="normalised", n=200001):
     P singular values. This is what subspace_distance() computes.
 
     convention='paper' divides by beta*pi, reproducing the (unnumbered) D_RMT
-    display on p.2 of arXiv:1108.4258 and the 0.83 quoted in its Fig. 2 caption
+    display in section 2 of arXiv:1203.6228, and the 0.83 quoted in the Fig. 2
+    caption of the short letter version (arXiv:1108.4258)
     for (P,Q,N) = (5,10,204). That paper only quotes the formula; it originates
     in its ref [6], Bouchaud, Laloux, Miceli & Potters, EPJB 55 (2007) 201.
-    Note this is NOT Eq (9) of arXiv:1108.4258 -- Eq (9) is the eigenvalue
+    Note this is NOT the eigenvalue variogram of section 4 -- that one is the
     variogram implemented above. That density carries mass
     alpha/beta = P/Q, so the value is P/Q times the normalised one. Provided for
     cross-checking against the paper only -- do not compare it against your own
