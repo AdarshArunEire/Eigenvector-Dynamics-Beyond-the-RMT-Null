@@ -1,10 +1,10 @@
 # Build notes — eigenvector dynamics beyond the RMT null
 
-## References
+## Note on the predecessor eigenvector dynamics paper
 
-Allez & Bouchaud wrote this twice and arXiv does not link the two, because they are
-separate submissions rather than versions of one. I worked from the short one for most of
-both dates without knowing the long one existed.
+Allez & Bouchaud wrote this twice and arXiv does not link the two, because they are separate submissions rather than versions of one. I worked from the short one for most of both dates without knowing the long one existed.
+<details>
+<summary>Click here to expand</summary>
 
 - **[arXiv:1203.6228](https://arxiv.org/abs/1203.6228)** — *"Eigenvector dynamics: general
   theory and some applications"*, March 2012. The full paper. **This is the reference to
@@ -44,6 +44,8 @@ Both empirical figures plot $D$ itself, on a $0$–$0.45$ axis, never a ratio:
   being felt, and leads to an increase of $D_{emp}$."* §6 gives one $T^*$ per index —
   Nikkei 600, SP500 700, DAX 450, CAC 40 400 days. The "around two years ($T^* = 500$
   days)" in the caption is a round-number summary of those four.
+
+</details>
 
 ## Stage 1 — instrument
 *2026-08-01*
@@ -486,3 +488,150 @@ It serves as a richer geometry that preserves how the market mode directions are
 | CAC 40 | 0.0830 | 0.020 | 0.0622 | 0.020 / 0.040 |
 
 The lower flag cosine is expected because it incorporates the weaker outer $Y^{(6)}$ movement alongside $Y^{(1)}$ and $Y^{(3)}$. Nonetheless, the representation gate is cleared.
+
+## Stage 1, continued — 2 robustness checks.
+
+*2026-08-03*
+
+Last night, I posted a question to r/quant, wondering *"what is the strongest fair baseline: holding the eigenvectors fixed, EWMA, or a rotationally invariant estimator?"* in anticipation for stage 2. In a reply by *`u/Effective_Manager273`* two robustness checks were suggested alongside their response. I wrap up stage 1 by implementing and running the tests.
+
+### Regime 4.8a — Does the signal require cross-sectional organisation?
+*posed by `u/Effective_Manager273`:*
+
+**What is tested:** Could the measured directional persistence arise from each asset’s individual distribution and autocorrelation, combined with rolling-window estimation, even when there is no organised cross-asset structure?
+
+**Setup:** For each company independently, generate an IAAFT surrogate return history. then for each surrogate recompute the flag and observe mean cosine rotation. This follows the surrogate-testing framework of [Theiler et al.](https://www.sciencedirect.com/science/article/abs/pii/016727899290102S?via%3Dihub) and the iterative construction of [Schreiber–Schmitz](https://arxiv.org/abs/chao-dyn/9909041).
+
+**Verdict:**
+| Panel | Original cosine | After removal | Raw change | Coherence change |
+|---|---:|---:|---:|---:|
+| S&P | 0.1545 | 0.1551 | +0.4% | 13.05% → 15.64%, +19.8% |
+| Nikkei | 0.0706 | 0.0786 | +11.3% | 6.95% → 7.14%, +2.8% |
+| DAX | 0.0561 | 0.0657 | +17.1% | 10.98% → 11.42%, +4.0% |
+| CAC | 0.0622 | 0.0637 | +2.4% | 10.36% → 8.92%, **−13.9%** |
+
+Removing the market factor did not weaken the rotation signal at the complete flag level, but individual Flag layers changed substantially:
+- S&P: market cosine gained 50%, top six lost 39%, while the $4{:}6$ block lost 24%.
+- Nikkei: market cosine lost 21%, top three lost 15%, top six lost 21%.
+- DAX: market lost 30%, top three lost 26%, while top six gained 56%.
+- CAC: top six lost 66%, the $4{:}6$ block lost 40%, while top three gained 17%.
+So the market removal redistributes where the persistence can be observed.
+
+### Regime 4.8b — Remove the market factor and rebuild everything
+*posed by `u/Effective_Manager273`:*
+
+**What is tested:** Is the persistent Flag motion merely changing market beta or movement of the leading market factor?
+
+**Setup:** Define a window where each companies beta is estimated, after removing hte average returns over the panel that day. Extract a new residual flag from this window, and run all the same tests. 
+
+**Verdict:**
+- Nikkei: **Pass**, persistence $p=0.01$, coherence $p=0.001$.
+- DAX: **Pass**, persistence $p=0.01$, coherence $p=0.006$.
+- CAC: **Pass**, persistence $p=0.02$, coherence $p=0.017$.
+- S&P: **Pass**, persistence $p=0.01$, coherence $p=0.001$.
+
+The signal **needs** real cross-sectional organisation and calendar structure.
+
+## Stage 2 — family 1 benchmarks 
+
+*2026-08-03*
+
+To kickoff stage 2, I establish two familes of baslines to compare to: family 1 forecasts the Flag; family  2 forecasts the complete covariance matrix. 
+
+### Benchmark Family 1 — forecast the future Flag
+Every method receives the same current $\mathrm{Flag}(N;1,3,6)$ and predicts its position 42 trading days ahead.
+| Benchmark | Forecast | Purpose |
+|---|---|---|
+| 1.1 Frozen Flag | predict no movement | mandatory zero-motion baseline |
+| 1.2 Constant Velocity | repeat the previous full tangent step | mandatory naive continuation rule |
+| 1.3 ERSE Direction | follow the published within-window ERSE rotation | checks whether temporal prediction reduces to ERSE |
+| 1.4 HCAL Flag | use the current hierarchically filtered eigenspace | structural eigenvector-filter baseline |
+| 1.5 BAHC Flag | use the bootstrapped hierarchical eigenspace | strongest recovered published eigenvector-filter baseline | 
+| 1.6 Retained-Window Flag | use only the observations known to remain in the future rolling window | parameter-free rolling-composition forecast |
+| 1.7 Stationary Roll-Forward | add a stationary fill for the 42 unseen observations | causal conditional rolling-window forecast |
+| 1.8 RiskMetrics EWMA Flag | use the fixed $\lambda=0.94$ EWMA eigenspace | canonical short-memory financial forecast |
+| 1.9 Validation-Geometric EWMA Flag | tune the EWMA half-life on validation Flag loss | objective-matched adaptive forecast |
+| 1.10 Factor CM-IEWMA Flag | use the published multi-timescale factor covariance forecast | external financial forecast |
+
+### Benchmark 1.1 — Frozen Flag
+
+**What is tested:** How wrong am I if I pretend the Flag does not move?
+
+**Setup:** At every forecast origin, predict
+$$
+\widehat{\mathcal F}_{t+42}=\mathcal F_t.
+$$
+Score the market, top-three, top-six and complete nested Flag against its actual position 42 trading days later.
+
+**Verdict:** 
+| Panel | Market | Block $2{:}3$ | Block $4{:}6$ | Top three | Top six | Complete Flag |
+|---|---:|---:|---:|---:|---:|---:|
+| S&P 500 | 0.00367 | 0.03828 | 0.09523 | 0.02594 | 0.04357 | 0.02439 |
+| Nikkei | 0.00467 | 0.04470 | 0.20836 | 0.03074 | 0.10801 | 0.04781 |
+| DAX | 0.00513 | 0.10787 | 0.22201 | 0.07255 | 0.09195 | 0.05654 |
+| CAC 40 | 0.00487 | 0.03935 | 0.20328 | 0.02674 | 0.09966 | 0.04376 |
+
+The market direction is already extremely stable, while the $4{:}6$ block leaves far more error available to remove.
+
+Projector loss is bounded between 0 and 1 and consecutive rolling windows share most of their observations, so the numbers are small, and difficult to interpret. That motivated expressing the future results as skill relative to `Benchmark 1.1 — Frozen Flag`: 
+
+$$
+\mathrm{Skill} = 
+100\left( 1-\frac{\mathrm{Loss}_{\mathrm{model}}}         
+{\mathrm{Loss}_{\mathrm{Frozen}}} \right).
+$$
+
+### Benchmark 1.1-1.5 
+
+In these results I take the equal-market average for benchmark $b$ and component $c$ across panels $m$:
+$$
+S_{b,c}^{\mathrm{combined}}
+=
+\frac14\sum_{m\in\{\mathrm{S\&P,Nikkei,DAX,CAC}\}}
+\mathrm{Skill}_{b,m,c}.
+$$
+
+| Benchmark | What is tested |
+|---|---|
+| 1.1 — Frozen Flag | What happens if I pretend the Flag does not move? |
+| 1.2 — Constant Velocity | What happens if I repeat the previous complete Flag rotation at full length? |
+| 1.3 — ERSE Direction | Can ERSE’s within-window eigenvector correction serve as the next Flag forecast? | 
+| 1.4 — HCAL Flag | Does replacing the current empirical Flag with a single hierarchically filtered correlation Flag improve prediction of the future empirical Flag? |
+| 1.5 — BAHC Flag | Does bootstrap-averaging 1.4 make the eigenspace competitive.| 
+| 1.6 — Retained-Window Flag | Does removing the observations known to expire improve the future Flag forecast? |
+| 1.7 — Stationary Roll-Forward | Does a stationary forecast for the 42 unseen observations add to the retained-window forecast? |
+| 1.8 — RiskMetrics EWMA Flag | Does the canonical fixed-decay financial forecast beat Frozen geometrically? |
+| 1.9 — Validation-Geometric EWMA Flag | Can a validation-selected EWMA timescale beat Frozen geometrically? |
+| 1.10 — Factor CM-IEWMA Flag | Does a published multi-timescale factor covariance forecast predict the future Flag? |
+
+| Benchmark | Market skill | $2{:}3$ skill | $4{:}6$ skill | Top-three skill | Top-six skill | Complete-Flag skill | Worst panel, complete Flag |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Frozen Flag | 0% | 0% | 0% | 0% | 0% | 0% | 0% |
+| Constant Velocity | −59.9% | −53.4% | −50.6% | −53.7% | −54.6% | −53.7% | −57.4% |
+| ERSE Direction | −3252% | −1.5% | −2.1% | −147.2% | −33.2% | −189.9% | −337.1% |
+| HCAL Flag | −492.1% | −892.1% | −326.9% | −895.3% | −414.2% | −535.2% | −1001.6% |
+| BAHC Flag | −391.9% | −761.4% | −304.3% | −762.0% | −355.8% | −458.0% | −881.0% |
+| **Retained-Window Flag** | **+40.9%** | **+38.5%** | **+39.5%** | **+38.5%** | **+40.7%** | **+39.6%** | **+37.4%** |
+| **Stationary Roll-Forward** | **+41.4%** | **+37.8%** | **+39.2%** | **+37.9%** | **+40.5%** | **+39.2%** | **+36.8%** |
+| RiskMetrics EWMA Flag | −1869% | −891.6% | −371.3% | −903.9% | −476.8% | −629.7% | −1121.5% |
+| **Validation-Geometric EWMA Flag** | **+22.2%** | **+25.1%** | **+19.1%** | **+24.9%** | **+17.6%** | **+20.1%** | **+16.2%** |
+| Factor CM-IEWMA Flag | −90.2% | −90.7% | −68.6% | −91.2% | −62.4% | −71.6% | −187.8% |
+
+Of the ten Family 1 baselines, only five are directly aligned with the 42 days ahead rolling Flag target. The remaining methods are established covariance estimators repurposed as external comparators.
+
+| Benchmark | Market skill | $2{:}3$ skill | $4{:}6$ skill | Top-three skill | Top-six skill | Complete-Flag skill | Worst panel, complete Flag |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Frozen Flag | 0% | 0% | 0% | 0% | 0% | 0% | 0% |
+| Constant Velocity | −59.9% | −53.4% | −50.6% | −53.7% | −54.6% | −53.7% | −57.4% |
+| **Retained-Window Flag** | +40.9% | **+38.5%** | **+39.5%** | **+38.5%** | **+40.7%** | **+39.6%** | **+37.4%** |
+| **Stationary Roll-Forward** | **+41.4%** | +37.8% | +39.2% | +37.9% | +40.5% | +39.2% | +36.8% |
+| Validation-Geometric EWMA Flag | +22.2% | +25.1% | +19.1% | +24.9%** | +17.6% | +20.1% | +16.2% |
+
+## Stage 2 — family 1 models
+
+### Model 3.1 — single fixed damping coefficient
+
+For each panel, a fixed $\alpha$ scales the complete previous Flag rotation:
+- $\alpha=0$: Frozen Flag.
+- $\alpha=1$: Constant Velocity.
+- $0<\alpha<1$: damped continuation.

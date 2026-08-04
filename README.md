@@ -10,7 +10,7 @@ This project builds and calibrates an eigenvector-overlap instrument, reproduces
 
 **Stage 1**
 
-Synthetic experiments established that excess overlap distance is a reliable measure of genuine rotation once it clears the sampling-noise floor. On S&P 500, Nikkei, DAX and CAC 40 data, Stage 1 then found a directional signal that was coherent across assets and could not be explained away as a by-product of within-window eigenvector shrinkage.
+Synthetic experiments established that excess overlap distance is a reliable measure of genuine rotation once it clears the sampling-noise floor. The first full-window test found coherent directional persistence on four equity markets, but a deletion-attribution test subsequently showed that the mean per-origin share of outgoing tangent energy aligned with observations already known to leave each rolling window is 39–45%.
 
 The final learning state is
 
@@ -20,22 +20,24 @@ $$
 \in\mathrm{Flag}(N;1,3,6),
 $$
 
-preserving the market direction, top-three core and six-dimensional collision buffer. The representation gate is cleared: yesterday's rotation direction contains information about the next rotation.
+preserving the market direction, top-three core and six-dimensional collision buffer. The corrected forecast starts from the Flag of the retained observations and predicts only what the next 42 unseen returns add. That residual direction passes both calendar and volatility-matched nulls on S&P 500 and in the equal-market aggregate; Nikkei is borderline before multiplicity correction, while DAX and CAC do not pass.
 
-This is evidence for a forecastable label, where ML could improve out-of-sample covariance or portfolio risk. That is the Stage 2 question.
+This leaves a narrower but honest forecastable label. Stage 2 asks whether its S&P-led residual signal can improve out-of-sample covariance or portfolio risk.
 
 ## Stage 2
 
-The forecasting ladder is:
+The forecasting ladder is being rebuilt around one common primitive:
 
-1. hold the current flag fixed;
-2. repeat its previous velocity;
-3. learn a damping coefficient;
-4. learn separate market/core/buffer dynamics;
-5. fit a transported tangent autoregression;
-6. test richer sequence and full-SPD models only after they beat the simpler baselines.
+1. delete the 42 observations known to expire and form the retained Flag;
+2. predict zero contribution from the unseen block;
+3. learn a damped continuation of the preceding realised incoming-block effect;
+4. learn separate market/core/buffer residual dynamics;
+5. fit a transported residual-tangent autoregression;
+6. test richer sequence and full-SPD models only after they beat the retained baseline.
 
-Every model will be evaluated chronologically on untouched future blocks and compared with holding still, constant velocity and a rotationally invariant covariance estimator.
+Every geometric model will receive the same retained state and be evaluated against the actual future Flag. Positive skill versus Retained Window is therefore evidence about unseen returns rather than credit for deterministic window turnover. Reconstructed forecasts must still face established full-covariance estimators.
+
+The original global-damping fit improved on holding still by 1.61% but lost to Retained Window by 62.9%. Regime 4.9 revealed that this was the wrong primitive, so that fit is retained as a diagnostic rather than claimed as a model of unseen-return dynamics.
 
 ## Repository structure
 

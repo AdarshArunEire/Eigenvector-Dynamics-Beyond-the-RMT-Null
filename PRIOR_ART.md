@@ -254,6 +254,16 @@ the residual persists. The important qualification is component-specific: the
 outer six-space is weak on DAX and borderline on CAC, so it is supported as a
 containing buffer, not as six equally predictable directions.
 
+Regime 4.9 later narrows that temporal interpretation. The earlier tangent
+combined the deterministic deletion of 42 known observations with the addition
+of 42 unseen returns. Once every transition is based at its retained-observation
+Flag, deletion accounts for a mean 39–45% of per-origin outgoing tangent energy. Incoming-block
+persistence survives both calendar and volatility-matched return nulls on S&P
+and in the equal-market aggregate; Nikkei is borderline before multiplicity
+correction, while DAX and CAC fail. The literature comparison still supports
+the Flag representation and the distinction from ERSE, but no longer supports
+a universal four-market forecastability claim.
+
 Also correcting the record on their empirics: **19 Ken French factor-sorted datasets, monthly,
 July 1969 – June 2024 (660 months), $N$ from 30 to 654, rolling window 120 months.** Average
 pairwise correlation 0.56–0.83. So $q = N/T$ runs up to $654/120 \approx 5.5$. That is not your
@@ -567,6 +577,28 @@ even if it is there — an inconclusive 4.4 will need to be reported as inconclu
 as absence.
 
 ---
+
+## Surrogate-data testing — what Regime 4.8A can and cannot establish
+
+**Theiler, Eubank, Longtin, Galdrikian & Farmer, *Testing for nonlinearity in
+time series: the method of surrogate data*, Physica D 58 (1992),
+[DOI](https://doi.org/10.1016/0167-2789(92)90102-S)** introduced the operative
+logic: specify a null, generate constrained surrogate histories under it, and
+compare a discriminating statistic with that ensemble. **Schreiber & Schmitz,
+*Improved surrogate data for nonlinearity tests*,
+[arXiv:chao-dyn/9909041](https://arxiv.org/abs/chao-dyn/9909041)** proposed the
+iterative amplitude-adjusted Fourier construction used in Regime 4.8A to match
+the observed marginal distribution and autocorrelation more closely.
+
+The transfer to this project is methodological, not a financial precedent.
+Independent IAAFT surrogates preserve each asset's univariate marginal exactly
+and its linear spectrum approximately, but deliberately destroy contemporaneous
+market and sector organisation. They therefore test whether univariate dynamics
+plus overlapping covariance estimation can manufacture Flag persistence. They
+do **not** provide a matched null for a realistic financial covariance process,
+do not preserve nonlinear volatility clustering, and cannot replace the intact
+multivariate calendar-block null. A pass says real cross-sectional organisation
+is necessary; it does not by itself identify the economic mechanism.
 
 ## Where that leaves the project
 

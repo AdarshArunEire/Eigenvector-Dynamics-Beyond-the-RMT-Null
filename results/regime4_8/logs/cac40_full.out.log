@@ -1,0 +1,204 @@
+cac40_full: N=23, days=6828, T=250, test=all
+    phase surrogate 13/99
+    phase surrogate 14/99
+    phase surrogate 15/99
+    phase surrogate 16/99
+    phase surrogate 17/99
+    phase surrogate 18/99
+    phase surrogate 19/99
+    phase surrogate 20/99
+    phase surrogate 21/99
+    phase surrogate 22/99
+    phase surrogate 23/99
+    phase surrogate 24/99
+    phase surrogate 25/99
+    phase surrogate 26/99
+    phase surrogate 27/99
+    phase surrogate 28/99
+    phase surrogate 29/99
+    phase surrogate 30/99
+    phase surrogate 31/99
+    phase surrogate 32/99
+    phase surrogate 33/99
+    phase surrogate 34/99
+    phase surrogate 35/99
+    phase surrogate 36/99
+    phase surrogate 37/99
+    phase surrogate 38/99
+    phase surrogate 39/99
+    phase surrogate 40/99
+    phase surrogate 41/99
+    phase surrogate 42/99
+    phase surrogate 43/99
+    phase surrogate 44/99
+    phase surrogate 45/99
+    phase surrogate 46/99
+    phase surrogate 47/99
+    phase surrogate 48/99
+    phase surrogate 49/99
+    phase surrogate 50/99
+    phase surrogate 51/99
+    phase surrogate 52/99
+    phase surrogate 53/99
+    phase surrogate 54/99
+    phase surrogate 55/99
+    phase surrogate 56/99
+    phase surrogate 57/99
+    phase surrogate 58/99
+    phase surrogate 59/99
+    phase surrogate 60/99
+    phase surrogate 61/99
+    phase surrogate 62/99
+    phase surrogate 63/99
+    phase surrogate 64/99
+    phase surrogate 65/99
+    phase surrogate 66/99
+    phase surrogate 67/99
+    phase surrogate 68/99
+    phase surrogate 69/99
+    phase surrogate 70/99
+    phase surrogate 71/99
+    phase surrogate 72/99
+    phase surrogate 73/99
+    phase surrogate 74/99
+    phase surrogate 75/99
+    phase surrogate 76/99
+    phase surrogate 77/99
+    phase surrogate 78/99
+    phase surrogate 79/99
+    phase surrogate 80/99
+    phase surrogate 81/99
+    phase surrogate 82/99
+    phase surrogate 83/99
+    phase surrogate 84/99
+    phase surrogate 85/99
+    phase surrogate 86/99
+    phase surrogate 87/99
+    phase surrogate 88/99
+    phase surrogate 89/99
+    phase surrogate 90/99
+    phase surrogate 91/99
+    phase surrogate 92/99
+    phase surrogate 93/99
+    phase surrogate 94/99
+    phase surrogate 95/99
+    phase surrogate 96/99
+    phase surrogate 97/99
+    phase surrogate 98/99
+    phase surrogate 99/99
+
+  4.8A IAAFT: complete Flag
+    observed cosine +0.0622; null +0.0444; p=0.0700
+    residual calendar null 1/99
+    residual calendar null 2/99
+    residual calendar null 3/99
+    residual calendar null 4/99
+    residual calendar null 5/99
+    residual calendar null 6/99
+    residual calendar null 7/99
+    residual calendar null 8/99
+    residual calendar null 9/99
+    residual calendar null 10/99
+    residual calendar null 11/99
+    residual calendar null 12/99
+    residual calendar null 13/99
+    residual calendar null 14/99
+    residual calendar null 15/99
+    residual calendar null 16/99
+    residual calendar null 17/99
+    residual calendar null 18/99
+    residual calendar null 19/99
+    residual calendar null 20/99
+    residual calendar null 21/99
+    residual calendar null 22/99
+    residual calendar null 23/99
+    residual calendar null 24/99
+    residual calendar null 25/99
+    residual calendar null 26/99
+    residual calendar null 27/99
+    residual calendar null 28/99
+    residual calendar null 29/99
+    residual calendar null 30/99
+    residual calendar null 31/99
+    residual calendar null 32/99
+    residual calendar null 33/99
+    residual calendar null 34/99
+    residual calendar null 35/99
+    residual calendar null 36/99
+    residual calendar null 37/99
+    residual calendar null 38/99
+    residual calendar null 39/99
+    residual calendar null 40/99
+    residual calendar null 41/99
+    residual calendar null 42/99
+    residual calendar null 43/99
+    residual calendar null 44/99
+    residual calendar null 45/99
+    residual calendar null 46/99
+    residual calendar null 47/99
+    residual calendar null 48/99
+    residual calendar null 49/99
+    residual calendar null 50/99
+    residual calendar null 51/99
+    residual calendar null 52/99
+    residual calendar null 53/99
+    residual calendar null 54/99
+    residual calendar null 55/99
+    residual calendar null 56/99
+    residual calendar null 57/99
+    residual calendar null 58/99
+    residual calendar null 59/99
+    residual calendar null 60/99
+    residual calendar null 61/99
+    residual calendar null 62/99
+    residual calendar null 63/99
+    residual calendar null 64/99
+    residual calendar null 65/99
+    residual calendar null 66/99
+    residual calendar null 67/99
+    residual calendar null 68/99
+    residual calendar null 69/99
+    residual calendar null 70/99
+    residual calendar null 71/99
+    residual calendar null 72/99
+    residual calendar null 73/99
+    residual calendar null 74/99
+    residual calendar null 75/99
+    residual calendar null 76/99
+    residual calendar null 77/99
+    residual calendar null 78/99
+    residual calendar null 79/99
+    residual calendar null 80/99
+    residual calendar null 81/99
+    residual calendar null 82/99
+    residual calendar null 83/99
+    residual calendar null 84/99
+    residual calendar null 85/99
+    residual calendar null 86/99
+    residual calendar null 87/99
+    residual calendar null 88/99
+    residual calendar null 89/99
+    residual calendar null 90/99
+    residual calendar null 91/99
+    residual calendar null 92/99
+    residual calendar null 93/99
+    residual calendar null 94/99
+    residual calendar null 95/99
+    residual calendar null 96/99
+    residual calendar null 97/99
+    residual calendar null 98/99
+    residual calendar null 99/99
+    coherence null 100/999
+    coherence null 200/999
+    coherence null 300/999
+    coherence null 400/999
+    coherence null 500/999
+    coherence null 600/999
+    coherence null 700/999
+    coherence null 800/999
+    coherence null 900/999
+    coherence null 999/999
+
+  4.8B market residual: complete Flag
+    observed cosine +0.0637; null +0.0227; p=0.0200
+    coherent share 8.92%; shift null 6.96%; p=0.0170

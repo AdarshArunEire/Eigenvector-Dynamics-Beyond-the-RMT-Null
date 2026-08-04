@@ -279,6 +279,19 @@ it before its output means anything.
 
 ---
 
+**Theiler, Eubank, Longtin, Galdrikian & Farmer, *Testing for nonlinearity in time series: the
+method of surrogate data*, [DOI](https://doi.org/10.1016/0167-2789(92)90102-S), Physica D 58
+(1992)** — **[method read]** The constrained-surrogate hypothesis-testing framework used to state
+Regime 4.8A correctly: generate histories satisfying a declared null and compare one predeclared
+discriminating statistic with their ensemble.
+
+**Schreiber & Schmitz, *Improved surrogate data for nonlinearity tests*,
+[arXiv:chao-dyn/9909041](https://arxiv.org/abs/chao-dyn/9909041)** — **[method read]** Introduces
+the iterative amplitude-adjusted Fourier surrogate used in Regime 4.8A. It matches the empirical
+marginal and linear autocorrelation far more closely than a single amplitude-adjusted phase pass;
+applied independently across assets here, it deliberately removes the original cross-sectional
+timing and is therefore a harsh negative control rather than a realistic covariance baseline.
+
 ## Cut
 
 Removed from the reading list. Recorded so a later sweep does not re-triage them.
