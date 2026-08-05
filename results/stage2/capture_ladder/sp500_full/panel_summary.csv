@@ -1,0 +1,2 @@
+label,N,T_in,T_out,step,n_origins,n_train,n_validation,n_test,block_length_origins,independent_blocks,random_floor,frozen_capture,ceiling_capture,naive_headroom,ceiling_bias,real_headroom,validation_selected_ewma_half_life,rie_shrinkage_invisible,rie_invisible_after_renormalisation
+sp500_full,357,750,42,14,421,195,54,118,57,2.0701754385964914,0.01680672268907563,0.44235275718280453,0.6140130212075695,0.17166026402476497,0.07838721459739682,0.09327304942736815,252.0,True,False

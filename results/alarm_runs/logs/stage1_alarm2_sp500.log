@@ -1,0 +1,799 @@
+
+===== 2026-08-04T14:29:21.401843+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/alarm2_window_sweep.py --label sp500_full --mode full --shuffles 6 --cells 500:42 --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep
+
+=== cell 1/1: arm A, T=500, h=42 ===
+sp500_full: N=357, days=6678, T=500, h=42, step=14, shuffles=6
+
+===== 2026-08-04T14:29:58.828485+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/alarm2_window_sweep.py --label sp500_full --mode full --shuffles 6 --cells 500:42 --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep
+
+=== cell 1/1: arm A, T=500, h=42 ===
+sp500_full: N=357, days=6678, T=500, h=42, step=14, shuffles=6
+
+===== 2026-08-04T14:31:27.888702+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/alarm2_window_sweep.py --label sp500_full --mode full --shuffles 6 --cells 500:42 --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep
+
+=== cell 1/1: arm A, T=500, h=42 ===
+sp500_full: N=357, days=6678, T=500, h=42, step=14, shuffles=6
+    volatility null 1/6
+    volatility null 2/6
+    volatility null 3/6
+    volatility null 4/6
+    volatility null 5/6
+    volatility null 6/6
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.1978                             0.4486                     0.0842                0.1382                0.0496        0.1429
+  block_2_3            0.2593                             0.5033                     0.1157                0.1942                0.0890        0.1429
+  block_4_6            0.1533                             0.4570                     0.0654                0.1200                0.0633        0.1429
+      top_3            0.2541                             0.5013                     0.1132                0.1901                0.0865        0.1429
+      top_6            0.1232                             0.4432                     0.0493                0.0933                0.0516        0.1429
+flag_nested            0.1673                             0.4565                     0.0716                0.1275                0.0658        0.1429
+
+Design
+arm   T  horizon     q  deletion_fraction  origins  independent_blocks
+  A 500       42 0.714              0.084      436              10.381
+
+Observed (no null required)
+arm   T  horizon  observed_addition_cosine  observed_full_cosine  deletion_attributed_fraction  projection_residual_cosine
+  A 500       42                    0.1275                0.1673                        0.4565                      0.0716
+
+Volatility-matched null
+arm   T  horizon      q  observed_addition_cosine  null_mean  null_sd  excess      z  mde_excess      p  n_null
+  A 500       42 0.7140                    0.1275     0.0658   0.0077  0.0617 8.0157      0.0105 0.1429       6
+
+===== 2026-08-04T14:36:33.201618+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/alarm2_window_sweep.py --label sp500_full --mode full --shuffles 99 --cells all --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep
+
+=== cell 1/7: arm A+B, T=357, h=42 ===
+sp500_full: N=357, days=6678, T=357, h=42, step=14, shuffles=99
+    volatility null 1/99
+    volatility null 2/99
+    volatility null 3/99
+    volatility null 4/99
+    volatility null 5/99
+    volatility null 6/99
+    volatility null 7/99
+    volatility null 8/99
+    volatility null 9/99
+    volatility null 10/99
+    volatility null 11/99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.1611                             0.4528                     0.0388                0.1046                0.0439        0.0100
+  block_2_3            0.2063                             0.4964                     0.0627                0.1385                0.0790        0.0100
+  block_4_6            0.1456                             0.4529                     0.0315                0.0971                0.0568        0.0200
+      top_3            0.2019                             0.4946                     0.0591                0.1347                0.0764        0.0100
+      top_6            0.1235                             0.4380                     0.0152                0.0778                0.0441        0.0100
+flag_nested            0.1545                             0.4508                     0.0338                0.0977                0.0564        0.0100
+
+=== cell 2/7: arm A, T=500, h=42 ===
+sp500_full: N=357, days=6678, T=500, h=42, step=14, shuffles=99
+    volatility null 7/99
+    volatility null 8/99
+    volatility null 9/99
+    volatility null 10/99
+    volatility null 11/99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.1978                             0.4486                     0.0842                0.1382                0.0510        0.0100
+  block_2_3            0.2593                             0.5033                     0.1157                0.1942                0.0896        0.0100
+  block_4_6            0.1533                             0.4570                     0.0654                0.1200                0.0682        0.0100
+      top_3            0.2541                             0.5013                     0.1132                0.1901                0.0874        0.0100
+      top_6            0.1232                             0.4432                     0.0493                0.0933                0.0541        0.0300
+flag_nested            0.1673                             0.4565                     0.0716                0.1275                0.0682        0.0100
+
+=== cell 3/7: arm A, T=750, h=42 ===
+sp500_full: N=357, days=6678, T=750, h=42, step=14, shuffles=99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.2315                             0.4770                     0.1338                0.1729                0.0615        0.0100
+  block_2_3            0.2980                             0.4979                     0.1576                0.2240                0.1032        0.0100
+  block_4_6            0.1996                             0.4685                     0.1029                0.1309                0.0800        0.0100
+      top_3            0.2937                             0.4967                     0.1554                0.2198                0.1011        0.0100
+      top_6            0.1522                             0.4566                     0.0736                0.1068                0.0647        0.0200
+flag_nested            0.2111                             0.4701                     0.1107                0.1423                0.0816        0.0100
+
+=== cell 4/7: arm A, T=1008, h=42 ===
+sp500_full: N=357, days=6678, T=1008, h=42, step=14, shuffles=99
+    volatility null 8/99
+    volatility null 9/99
+    volatility null 10/99
+    volatility null 11/99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.2626                             0.4682                     0.1604                0.2051                0.0585        0.0100
+  block_2_3            0.3571                             0.5115                     0.2150                0.2816                0.0960        0.0100
+  block_4_6            0.2200                             0.4919                     0.1356                0.1629                0.0772        0.0100
+      top_3            0.3517                             0.5120                     0.2114                0.2765                0.0943        0.0100
+      top_6            0.1606                             0.4638                     0.1046                0.1260                0.0615        0.0100
+flag_nested            0.2446                             0.4887                     0.1504                0.1824                0.0787        0.0100
+
+=== cell 5/7: arm B, T=500, h=56 ===
+sp500_full: N=357, days=6678, T=500, h=56, step=14, shuffles=99
+    volatility null 1/99
+    volatility null 2/99
+    volatility null 3/99
+    volatility null 4/99
+    volatility null 5/99
+    volatility null 6/99
+    volatility null 7/99
+    volatility null 8/99
+    volatility null 9/99
+    volatility null 10/99
+    volatility null 11/99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.2221                             0.4476                     0.0825                0.1540                0.0280        0.0100
+  block_2_3            0.2668                             0.4975                     0.1042                0.1879                0.0624        0.0100
+  block_4_6            0.1796                             0.4465                     0.0724                0.1312                0.0470        0.0100
+      top_3            0.2622                             0.4958                     0.1017                0.1842                0.0606        0.0100
+      top_6            0.1575                             0.4310                     0.0574                0.1105                0.0363        0.0100
+flag_nested            0.1908                             0.4451                     0.0760                0.1347                0.0460        0.0100
+
+=== cell 6/7: arm B, T=750, h=84 ===
+sp500_full: N=357, days=6678, T=750, h=84, step=14, shuffles=99
+    volatility null 11/99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.2946                             0.4733                     0.1354                0.2091                0.0200        0.0100
+  block_2_3            0.3698                             0.4877                     0.1676                0.2671                0.0534        0.0100
+  block_4_6            0.2455                             0.4612                     0.1112                0.1814                0.0384        0.0100
+      top_3            0.3662                             0.4870                     0.1663                0.2628                0.0518        0.0100
+      top_6            0.1800                             0.4416                     0.0642                0.1365                0.0311        0.0100
+flag_nested            0.2619                             0.4631                     0.1217                0.1923                0.0376        0.0100
+
+=== cell 7/7: arm B, T=1008, h=112 ===
+sp500_full: N=357, days=6678, T=1008, h=112, step=14, shuffles=99
+    volatility null 1/99
+    volatility null 2/99
+    volatility null 3/99
+    volatility null 4/99
+    volatility null 5/99
+    volatility null 6/99
+    volatility null 7/99
+    volatility null 8/99
+    volatility null 9/99
+    volatility null 10/99
+    volatility null 11/99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.3604                             0.4650                     0.1920                0.2603                0.0142        0.0100
+  block_2_3            0.4263                             0.5055                     0.2045                0.3131                0.0470        0.0100
+  block_4_6            0.3081                             0.4722                     0.1606                0.2389                0.0351        0.0100
+      top_3            0.4228                             0.5054                     0.2025                0.3094                0.0458        0.0100
+      top_6            0.2405                             0.4499                     0.1223                0.1883                0.0240        0.0100
+flag_nested            0.3292                             0.4738                     0.1699                0.2480                0.0333        0.0100
+
+Design
+arm    T  horizon     q  deletion_fraction  origins  independent_blocks
+A+B  357       42 1.000              0.118      446              13.938
+  A  500       42 0.714              0.084      436              10.381
+  A  750       42 0.476              0.056      418               6.967
+  A 1008       42 0.354              0.042      400               5.128
+  B  500       56 0.714              0.112      434               9.864
+  B  750       84 0.476              0.112      412               6.242
+  B 1008      112 0.354              0.111      390               4.432
+
+Observed (no null required)
+arm    T  horizon  observed_addition_cosine  observed_full_cosine  deletion_attributed_fraction  projection_residual_cosine
+A+B  357       42                    0.0977                0.1545                        0.4508                      0.0338
+  A  500       42                    0.1275                0.1673                        0.4565                      0.0716
+  A  750       42                    0.1423                0.2111                        0.4701                      0.1107
+  A 1008       42                    0.1824                0.2446                        0.4887                      0.1504
+  B  500       56                    0.1347                0.1908                        0.4451                      0.0760
+  B  750       84                    0.1923                0.2619                        0.4631                      0.1217
+  B 1008      112                    0.2480                0.3292                        0.4738                      0.1699
+
+Volatility-matched null
+arm    T  horizon      q  observed_addition_cosine  null_mean  null_sd  excess      z  mde_excess      p  n_null
+A+B  357       42 1.0000                    0.0977     0.0564   0.0140  0.0414 2.9492      0.0206 0.0100      99
+  A  500       42 0.7140                    0.1275     0.0682   0.0164  0.0593 3.6204      0.0241 0.0100      99
+  A  750       42 0.4760                    0.1423     0.0816   0.0185  0.0607 3.2795      0.0280 0.0100      99
+  A 1008       42 0.3542                    0.1824     0.0787   0.0220  0.1038 4.7100      0.0356 0.0100      99
+  B  500       56 0.7140                    0.1347     0.0460   0.0197  0.0887 4.4949      0.0310 0.0100      99
+  B  750       84 0.4760                    0.1923     0.0376   0.0266  0.1547 5.8125      0.0391 0.0100      99
+  B 1008      112 0.3542                    0.2480     0.0333   0.0358  0.2147 6.0043      0.0592 0.0100      99

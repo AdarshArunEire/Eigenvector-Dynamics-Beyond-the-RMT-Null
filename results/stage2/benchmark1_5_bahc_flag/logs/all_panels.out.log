@@ -1,0 +1,36 @@
+  sp500_full: 20/118 origins
+  sp500_full: 40/118 origins
+  sp500_full: 60/118 origins
+  sp500_full: 80/118 origins
+  sp500_full: 100/118 origins
+  sp500_full: 118/118 origins
+  nikkei_full: 20/115 origins
+  nikkei_full: 40/115 origins
+  nikkei_full: 60/115 origins
+  nikkei_full: 80/115 origins
+  nikkei_full: 100/115 origins
+  nikkei_full: 115/115 origins
+  dax_full: 20/120 origins
+  dax_full: 40/120 origins
+  dax_full: 60/120 origins
+  dax_full: 80/120 origins
+  dax_full: 100/120 origins
+  dax_full: 120/120 origins
+  cac40_full: 20/120 origins
+  cac40_full: 40/120 origins
+  cac40_full: 60/120 origins
+  cac40_full: 80/120 origins
+  cac40_full: 100/120 origins
+  cac40_full: 120/120 origins
+
+What is tested: 1.5 BAHC Flag against Frozen Flag on identical test origins.
+Setup: all six Flag losses; equal-market skill; paired calendar-block intervals.
+             combined_skill_percent  worst_panel_skill_percent  panels_improved  n_panels
+component                                                                                
+market_1                     -391.9                     -714.2                0         4
+block_2_3                    -761.4                      -1067                0         4
+block_4_6                    -304.3                     -634.3                0         4
+top_3                          -762                      -1081                0         4
+top_6                        -355.8                     -775.9                0         4
+flag_nested                    -458                       -881                0         4
+Verdict: NAY — complete-Flag combined skill -457.95%, worst panel -880.97%, 0/4 improved.

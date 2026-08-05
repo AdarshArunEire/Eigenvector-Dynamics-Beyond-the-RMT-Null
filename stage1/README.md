@@ -1,11 +1,11 @@
 # Stage 1 — Instrument and forecast-entry gates
 
 **Current status:** synthetic calibration, the 2000–2010 paper replication and
-the full-history direction, coherence, ERSE-attribution and partial-flag gates
-are complete through Regime 4.7. Stage 2 model fitting has not started, but its
-master target is now frozen as $\mathrm{Flag}(N;1,3,6)$. The sub-universe
-coherence scaling test remains necessary for a literal scaling claim; it is no
-longer a blocker to fitting the first chronological forecast.
+the full-history direction, coherence, ERSE-attribution, partial-flag and
+return-level controls are complete through Regime 4.9. The state remains
+$\mathrm{Flag}(N;1,3,6)$, but Regime 4.9 changed the forecast primitive: every
+model must begin from the observations known to remain and predict only the
+geometric contribution of the next 42 unseen returns.
 
 ## Scope — what counts as stage 1
 
@@ -15,7 +15,7 @@ Stage 1 contains everything required before fitting a forecast:
    truth is known.
 2. Regimes 4.1–4.3 reproduce the published real-data measurements on frozen
    2000–2010 panels.
-3. Regimes 4.4–4.7 use separate full-history panels through the latest 2026
+3. Regimes 4.4–4.9 use separate full-history panels through the latest 2026
    observation to ask whether a learnable and economically interpretable label
    exists.
 
@@ -27,6 +27,7 @@ but they are entry gates rather than ML results.
 | 2026-08-01 | 1.1–1.5, 2.1–2.3, 3.1–3.2 | synthetic calibration: null, confounds, additivity, power, block choice |
 | 2026-08-02 | 4.1–4.6 | real panels: eigenvalue variogram, subspace variogram, `T*`, tangent persistence, coherence, ERSE attribution |
 | 2026-08-03 | 4.7 | partial-flag persistence, coherence and ERSE-residual validation at dimensions 1, 3 and 6 |
+| 2026-08-04 | 4.8–4.9 | return-level factor and phase controls; deterministic-deletion attribution and residual incoming-block persistence |
 
 ### Current verdict
 
@@ -43,26 +44,25 @@ but they are entry gates rather than ML results.
   its ideal homogeneous-noise world and is not a credible real-data signal
   count. Existing $D(P,Q)$ experiments retain fixed $P=3,Q=6$; Regimes
   4.4–4.6 use $P=3$, and Regime 4.7 promotes $(1,3,6)$ to a partial flag.
-- **Direction:** pass on all four full-history panels. The preceding tangent
-  direction contains information, but repeating its full length is 47–67%
-  worse than holding the current subspace fixed. The S&P result is exploratory
-  because it currently has only 20 shuffle-null repetitions.
+- **Full-window direction:** the original statistic passes its matched null on
+  all four panels, but this is no longer the forecast-entry result. Regime 4.9
+  attributes a mean 39–45% of per-origin outgoing tangent energy to deterministic deletion and
+  reduces the deletion-projected cosine to 0.0338 on S&P, 0.0013 on DAX and
+  below zero on Nikkei and CAC.
 - **Coherence:** pass against the independently timed loading-history null on
   all four panels. The common component is broadest on S&P and weakest on CAC.
 - **ERSE attribution:** pass for the claim that the directional signal is not
   ERSE rearranged. ERSE explains only 0.05–0.92% of outgoing tangent energy and
   removing that direction leaves the persistence cosine essentially unchanged.
   ERSE itself is a poor future-subspace forecast on these daily panels.
-- **Flag target:** pass. The nested market/core/buffer state
-  $\mathrm{Flag}(N;1,3,6)$ preserves significant persistence and coherence on
-  Nikkei, DAX and CAC; S&P is strongly sign-consistent but exploratory at its
-  current 20-null resolution. The outer six-space is weaker than the market
-  and top-three spaces on DAX and CAC, so it is a containing buffer rather than
-  an equally strong standalone target.
-- **Not yet established:** whether the coherence result scales with universe
-  size and whether a chronologically held-out damped predictor improves
-  subspace or covariance risk. The first is a mechanism-claim check; the second
-  is now the first Stage 2 experiment.
+- **Residual Flag target:** partial pass. The incoming-block complete-Flag
+  cosine passes both return-level nulls on S&P after Holm adjustment and in the
+  equal-market aggregate. Nikkei passes both raw tests but not the
+  volatility-null Holm correction; DAX and CAC fail. The earlier universal
+  four-market forecastability claim is withdrawn.
+- **Not yet established:** whether a chronologically held-out predictor beats
+  the zero-residual Retained Window rule, or whether any resulting Flag forecast
+  improves covariance likelihood or portfolio risk.
 
 See the [Stage 2 forecast-entry report](../stage2/README.md) for the model-facing
 interpretation and [BUILDNOTES](../BUILDNOTES.md) for the chronological
@@ -906,11 +906,188 @@ Reproduce one confirmatory panel with, for example:
 python scripts/regime4_7_flag.py --label nikkei_full --T 250 --step 14 --horizon 42 --mode standardised --delta 0.25 --calendar-shuffles 99 --coherence-shuffles 999
 ```
 
+### 4.8 — what does the rotation signal require?
+
+Regimes 4.4–4.7 establish persistence, coherence and a valid partial-flag
+representation. Regime 4.8 subjects that result to two return-level controls
+suggested by an external reader. They answer different questions and are not
+interchangeable: independent phase surrogates are a deliberately harsh
+negative control, while rolling market-factor removal is a direct mechanism
+ablation.
+
+#### 4.8A — does persistence require real cross-sectional organisation?
+
+**What is tested.** Whether individual return distributions, individual linear
+serial dependence and the overlapping-window estimation pipeline can generate
+complete-flag persistence without the observed cross-company timing. This is a
+catastrophic-failure check: if independently randomised companies reproduce the
+real cosine, the pipeline can manufacture the headline result without a real
+multivariate process.
+
+**Setup.** Each asset is independently transformed by the iterative
+amplitude-adjusted Fourier-transform algorithm of Schreiber and Schmitz. Every
+surrogate contains exactly the observed return values for that asset and
+approximately preserves its Fourier amplitudes, hence its linear
+autocorrelation, but independent phases destroy contemporaneous market and
+sector structure. The full standardisation, rolling correlation,
+$\mathrm{Flag}(N;1,3,6)$ construction and persistence statistic are then rebuilt.
+There are 99 surrogate panels per market. The predeclared primary statistic is
+the mean complete-flag cosine; component results diagnose where a pass or fail
+comes from. Because this control destroys the covariance structure and can
+change eigengaps, it is not a matched replacement for the intact-calendar-block
+null of Regime 4.4. It also does not preserve nonlinear volatility clustering.
+
+**Verdict.** **YAY on S&P and Nikkei. NAY for the complete Flag on DAX and CAC,
+although their market and top-three components pass.** A NAY here does
+not overturn the matched calendar-null evidence; it says that the harsh
+univariate-only control leaves too little separation for a standalone 5% pass.
+
+| panel | observed flag cosine | phase-null mean | null 95th percentile | $p$ | verdict |
+|---|---:|---:|---:|---:|---|
+| S&P full | **0.1545** | 0.0274 | 0.0389 | 0.010 | **YAY** |
+| Nikkei full | **0.0706** | 0.0355 | 0.0485 | 0.010 | **YAY** |
+| DAX full | 0.0561 | 0.0420 | 0.0579 | 0.070 | **NAY, narrow** |
+| CAC full, cleaned | 0.0622 | 0.0444 | 0.0628 | 0.070 | **NAY, narrow** |
+
+The positive surrogate means, approximately $0.035$–$0.044$, quantify a real
+mechanical baseline from overlapping estimation windows. They are not zero and
+must not be described as such. DAX and CAC nevertheless contain strong
+lower-level structure: their market-direction cosines are 0.1804 and 0.1868
+against null means 0.0539 and 0.0543, and their top-three cosines are 0.0973 and
+0.0830 against 0.0455 and 0.0495; all four component comparisons have
+$p=0.010$. Their complete-flag failures come from the outer cumulative
+top-six level, which is raw-NAY on both panels. At $N=29$ and $N=23$, six
+directions occupy 21% and 26% of the ambient spaces, giving this weak buffer
+far more influence than it has on Nikkei or S&P.
+
+#### 4.8B — is persistence merely the market factor moving?
+
+**What is tested.** Whether the complete-flag persistence and coherence survive
+after removing each company's contemporaneous exposure to the panel-wide
+equal-weight market return. Within one rolling window, define
+
+$$m_s=\frac{1}{N}\sum_{i=1}^{N}r_{i,s},$$
+
+then estimate $r_{i,s}=\alpha_i+\beta_i m_s+\varepsilon_{i,s}$ using only the
+days in that window. The residual covariance and its entire Flag history are
+rebuilt from $\varepsilon_{i,s}$. This is not the earlier $2{:}3$ diagnostic:
+that diagnostic omitted $u_1$ geometrically, whereas 4.8B removes a return-level
+factor before estimating any eigenvector.
+
+**Setup.** Raw returns enter each rolling regression; the existing daily
+standardisation and correlation conversion are applied to the residuals. The
+matched persistence null first permutes intact 21-day blocks of the raw
+multivariate panel, then re-estimates the internal market, every beta, every
+residual covariance and every Flag. There are 99 calendar histories. Coherence
+uses the established 999 independently shifted residual-tangent histories. The
+complete-flag persistence and coherent share are the two primary gates;
+components are diagnostic.
+
+**Verdict.** **YAY on all four markets: the signal is not merely the market
+factor or changing exposure to it.** Persistence and coherence both survive
+return-level market removal on S&P, Nikkei, DAX and CAC.
+
+| panel | flag cosine: original → residual (null) | raw change | coherent share: original → residual (null) | raw change | persistence / coherence $p$ | verdict |
+|---|---:|---:|---:|---:|---:|---|
+| S&P full | 0.1545 → **0.1551** (0.0241) | **+0.4%** | 13.05% → **15.64%** (6.69%) | **+19.8%** | 0.010 / 0.001 | **YAY** |
+| Nikkei full | 0.0706 → **0.0786** (0.0173) | **+11.3%** | 6.95% → **7.14%** (2.75%) | **+2.8%** | 0.010 / 0.001 | **YAY** |
+| DAX full | 0.0561 → **0.0657** (0.0087) | **+17.1%** | 10.98% → **11.42%** (6.66%) | **+4.0%** | 0.010 / 0.006 | **YAY** |
+| CAC full, cleaned | 0.0622 → **0.0637** (0.0227) | **+2.4%** | 10.36% → **8.92%** (6.96%) | **−13.9%** | 0.020 / 0.017 | **YAY** |
+
+The residual and original cosines are not scores on the same target, so the
+small increases after removal must not be advertised as forecast improvement.
+Removing the dominant market direction promotes previously subordinate modes
+into the leading residual Flag. On DAX and CAC, mean tangent speed increases by
+23% and 27% while the leading relative eigengap falls from approximately 0.74
+to 0.22–0.25. Some additional movement is therefore expected from weaker mode
+identification. The matched rebuild null and surviving coherence, rather than
+the raw cosine increase, support the verdict.
+
+The stable complete-flag column does not mean that every layer was untouched.
+On S&P, market cosine rises by 50% while top six falls by 39% and the isolated
+$4{:}6$ block falls by 24%. On Nikkei, market, top-three and top-six cosine fall by 21%, 15% and 21%. On
+DAX, market and top-three fall by 30% and 26%, while top six rises by 56%. On
+CAC, top six falls by 66% and the isolated $4{:}6$ block falls by 40%, while
+top three rises by 17%. The nested cosine is normalised after the relative
+energies of all three cumulative levels are recomputed, so it is not an average
+of these component percentages. Regime 4.8B therefore reveals redistribution,
+not an indestructible statistic: the market ablation materially changes which
+layers carry persistence, while the combined residual direction still clears
+its matched null.
+
+Reproduce or resume both controls with:
+
+```bash
+python scripts/regime4_8_robustness.py --label nikkei_full --test all --phase-surrogates 99 --calendar-shuffles 99 --coherence-shuffles 999
+```
+
+### 4.9 — does persistence survive deterministic rolling deletion?
+
+**What is tested.** The previous persistence statistic let every transition
+combine two effects: observations known to leave the rolling window and returns
+not yet observed that enter it. Regime 4.9 makes deletion part of the forecast
+primitive. For current full Flag $\mathcal F_t$, let $\mathcal B_t$ be the Flag
+of the $T-42$ observations known to remain. The realised unknown-block effect is
+
+$$
+A_t^+=\operatorname{Log}_{\mathcal B_t}(\mathcal F_{t+42}).
+$$
+
+The preceding realised addition $A_t^-$ is constructed analogously from the
+previous retained Flag to $\mathcal F_t$, then carried to $\mathcal B_t$ by the
+same deterministic ordered orthogonal Flag transport used elsewhere in the
+project. Their cosine is the primary statistic. A zero tangent is exactly the
+Retained Window forecast.
+
+**Setup.** The full-history standardised panels, $T=357$ for S&P and $T=250$
+elsewhere, 42-day horizon, 14-day step and
+$\mathrm{Flag}(N;1,3,6)$ are unchanged. Each panel uses 99 histories under two
+return-level nulls. The first permutes intact 21-day blocks as in Regime 4.7.
+The stricter null permutes intact 42-day blocks only within five realised-
+volatility strata, preserving the coarse volatility-regime sequence while
+destroying the identity and exact cross-sectional organisation of arriving
+blocks. The complete Flag is the sole primary component. Four-panel Holm
+adjustment and the equal-market aggregate were frozen before collection.
+
+The table also reports a local attribution diagnostic. At $\mathcal F_t$, the
+deletion direction is $D_t=\operatorname{Log}_{\mathcal F_t}(\mathcal B_t)$.
+“Deletion energy” is the share of outgoing tangent energy removed by projection
+onto $D_t$; “projected old cosine” repeats the old persistence calculation after
+both tangents are projected off that direction.
+
+| panel | old cosine | deletion energy | projected old cosine | incoming-block cosine | positive origins | calendar null / raw $p$ / Holm | volatility-matched null / raw $p$ / Holm | verdict |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| S&P 500 | 0.1545 | 45.1% | 0.0338 | **0.0977** | 70.6% | 0.0107 / 0.01 / 0.04 | 0.0564 / 0.01 / 0.04 | **YAY** |
+| Nikkei | 0.0706 | 39.2% | −0.0066 | **0.0358** | 57.6% | −0.0002 / 0.01 / 0.04 | 0.0190 / 0.05 / 0.15 | **raw YAY; confirmatory NAY** |
+| DAX | 0.0561 | 39.1% | 0.0013 | 0.0200 | 54.5% | −0.0016 / 0.07 / 0.14 | 0.0147 / 0.35 / 0.70 | **NAY** |
+| CAC 40 | 0.0622 | 40.2% | −0.0128 | 0.0169 | 52.4% | 0.0006 / 0.09 / 0.14 | 0.0176 / 0.52 / 0.70 | **NAY** |
+
+The equal-market incoming-block cosine is 0.0426, against calendar and
+volatility-matched null means 0.0024 and 0.0269. It clears both aggregate nulls
+at $p=0.01$ and $p=0.03$.
+
+**Verdict.** **PARTIAL YAY — a deletion-adjusted signal exists, but the
+four-market claim does not survive.** S&P supplies a clear confirmatory result
+and the equal-market statistic clears both nulls. Nikkei is borderline under
+the stricter null and fails the frozen family adjustment; DAX and CAC are
+indistinguishable from volatility-matched rolling composition. Deterministic
+deletion explains a large part of the original persistence on every panel.
+Stage 2 must therefore start from $\mathcal B_t$ and learn $A_t^+$; Frozen-
+relative gains and the original Global Damping fit are retained only as
+historical diagnostics.
+
+Reproduce one panel and collect the frozen verdict with:
+
+```bash
+python scripts/regime4_9_deletion_attribution.py --label nikkei_full --shuffles 99
+python scripts/collect_regime4_9.py
+```
+
 ### Stage 2 entry decision
 
-**The representation gate is cleared.** Begin with chronological held-out
-baselines on the complete flag, scoring its market, top-three and top-six levels
-separately as well as jointly. The sub-universe coherence scaling test remains
-required before making a literal claim about how coherence scales with $N$; it
-does not need to delay model fitting. Regimes 4.6–4.7 establish a nonredundant
-target, not out-of-sample ML value—the latter is precisely Stage 2's job.
+**Proceed, but only with the residual target.** The representation remains the
+complete partial Flag, while the causal base is now the Retained Window Flag.
+S&P and the equal-market aggregate justify attempting a small chronological
+model; DAX and CAC cannot be cited as independently forecastable panels. The
+next success criterion is positive skill relative to Retained Window, not
+Frozen Flag. Full covariance value remains a separate Stage 2 test.

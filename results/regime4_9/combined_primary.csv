@@ -1,0 +1,2 @@
+mean_addition_cosine,calendar_null_mean,calendar_null_q95,calendar_p,volatility_null_mean,volatility_null_q95,volatility_p,passes_both
+0.042603815383224775,0.00236227335470547,0.011580214893606238,0.01,0.026914485246500586,0.037781215104716034,0.03,True

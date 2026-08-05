@@ -1,0 +1,2 @@
+label,N,T_in,T_out,step,n_origins,n_train,n_validation,n_test,block_length_origins,independent_blocks,random_floor,frozen_capture,ceiling_capture,naive_headroom,ceiling_bias,real_headroom,validation_selected_ewma_half_life,rie_shrinkage_invisible,rie_invisible_after_renormalisation
+dax_full,29,750,42,14,429,201,55,120,57,2.1052631578947367,0.20689655172413793,0.5792971833888295,0.7486644830424118,0.16936729965358233,0.0828597552247674,0.08650754442881492,252.0,True,False

@@ -356,6 +356,11 @@ def filter_by_coverage(returns, min_coverage=0.98, max_stale_run=10,
         rows.append({"ticker": col, "coverage": cov, "zero_fraction": zfrac,
                      "longest_stale_run": stale, "dropped_because": reason})
     report = pd.DataFrame(rows).set_index("ticker")
+    # Pandas 3 may infer the all-None/str column through a missing-value dtype
+    # and expose a kept name's reason as float NaN.  This field is a semantic
+    # optional string, so retain Python None for callers and reports.
+    report["dropped_because"] = report["dropped_because"].astype(object)
+    report.loc[report["dropped_because"].isna(), "dropped_because"] = None
     keep = report.index[report["dropped_because"].isna()]
     out = returns[keep].dropna(axis=0, how="any")
     if out.empty:

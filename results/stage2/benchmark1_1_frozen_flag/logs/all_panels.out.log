@@ -1,0 +1,40 @@
+
+sp500_full: N=357, days=6678, T=357
+  What is tested: loss from pretending the Flag does not rotate.
+  Setup: purged chronological train/validation/test; h=42 days.
+  Test component      mean      median       IQR       examples/effective
+  market_1        0.00367   0.00303   [0.00251, 0.00394]   118/5
+  top_3           0.02594   0.01200   [0.00878, 0.01910]   118/5
+  top_6           0.04357   0.03299   [0.02657, 0.04598]   118/5
+  flag_nested     0.02439   0.01789   [0.01425, 0.02561]   118/5
+  Verdict: BASELINE RECORDED — later models must reduce untouched test loss.
+
+nikkei_full: N=131, days=6629, T=250
+  What is tested: loss from pretending the Flag does not rotate.
+  Setup: purged chronological train/validation/test; h=42 days.
+  Test component      mean      median       IQR       examples/effective
+  market_1        0.00467   0.00446   [0.00367, 0.00536]   115/7
+  top_3           0.03073   0.02622   [0.01888, 0.03666]   115/7
+  top_6           0.10801   0.09709   [0.06957, 0.14728]   115/7
+  flag_nested     0.04781   0.04402   [0.03334, 0.06189]   115/7
+  Verdict: BASELINE RECORDED — later models must reduce untouched test loss.
+
+dax_full: N=29, days=6788, T=250
+  What is tested: loss from pretending the Flag does not rotate.
+  Setup: purged chronological train/validation/test; h=42 days.
+  Test component      mean      median       IQR       examples/effective
+  market_1        0.00513   0.00418   [0.00297, 0.00602]   120/7
+  top_3           0.07255   0.04652   [0.02765, 0.08607]   120/7
+  top_6           0.09195   0.07871   [0.05383, 0.12477]   120/7
+  flag_nested     0.05654   0.05270   [0.03562, 0.06941]   120/7
+  Verdict: BASELINE RECORDED — later models must reduce untouched test loss.
+
+cac40_full: N=23, days=6828, T=250
+  What is tested: loss from pretending the Flag does not rotate.
+  Setup: purged chronological train/validation/test; h=42 days.
+  Test component      mean      median       IQR       examples/effective
+  market_1        0.00487   0.00401   [0.00282, 0.00526]   120/7
+  top_3           0.02674   0.01910   [0.01434, 0.02702]   120/7
+  top_6           0.09966   0.08546   [0.05591, 0.14003]   120/7
+  flag_nested     0.04376   0.04036   [0.02851, 0.05650]   120/7
+  Verdict: BASELINE RECORDED — later models must reduce untouched test loss.

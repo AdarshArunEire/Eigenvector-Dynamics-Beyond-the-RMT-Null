@@ -1,0 +1,27 @@
+  dax_full: 100/429 origins [1s]
+  dax_full: 200/429 origins [2s]
+  dax_full: 300/429 origins [2s]
+  dax_full: 400/429 origins [3s]
+  dax_full: 429/429 origins [3s]
+
+What is tested: the Stage 2 capture ladder on test origins only, EWMA half-life selected on validation.
+Setup: T_in=750, T_out=42, step=14; circular-block interval at block length 57 origins.
+   label  N  n_test  independent_blocks  random_floor  frozen_capture  ceiling_capture  naive_headroom  ceiling_bias  real_headroom  validation_selected_ewma_half_life  rie_shrinkage_invisible  rie_invisible_after_renormalisation
+dax_full 29     120              2.1053        0.2069          0.5793           0.7487          0.1694        0.0829         0.0865                            252.0000                     True                                False
+
+Paired against Frozen on test origins:
+   label      entrant  paired_improvement  improvement_ci_low  improvement_ci_high  origin_win_fraction  excludes_zero
+dax_full      ceiling              0.1694              0.1540               0.1843               1.0000           True
+dax_full   ewma_hl_21             -0.0222             -0.0265              -0.0178               0.1083           True
+dax_full   ewma_hl_42             -0.0060             -0.0095              -0.0024               0.3417           True
+dax_full   ewma_hl_63              0.0006             -0.0027               0.0041               0.4500          False
+dax_full  ewma_hl_126              0.0070              0.0043               0.0099               0.7000           True
+dax_full  ewma_hl_252              0.0082              0.0058               0.0109               0.7250           True
+dax_full  ewma_hl_504              0.0068              0.0046               0.0093               0.7500           True
+dax_full ewma_hl_1008              0.0056              0.0034               0.0079               0.6667           True
+dax_full  ewma_hl_inf              0.0041              0.0019               0.0067               0.6500           True
+dax_full  ledoit_wolf             -0.0000             -0.0000              -0.0000               0.3583           True
+dax_full          oas             -0.0000             -0.0000              -0.0000               0.3167           True
+dax_full          qis             -0.0001             -0.0002              -0.0000               0.2083           True
+
+Rotationally-invariant class: max |improvement| = 0.000124. Shrinkage step invisible on every origin = True; still invisible after the ladder's correlation renormalisation = False.

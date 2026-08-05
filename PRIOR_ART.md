@@ -254,6 +254,16 @@ the residual persists. The important qualification is component-specific: the
 outer six-space is weak on DAX and borderline on CAC, so it is supported as a
 containing buffer, not as six equally predictable directions.
 
+Regime 4.9 later narrows that temporal interpretation. The earlier tangent
+combined the deterministic deletion of 42 known observations with the addition
+of 42 unseen returns. Once every transition is based at its retained-observation
+Flag, deletion accounts for a mean 39–45% of per-origin outgoing tangent energy. Incoming-block
+persistence survives both calendar and volatility-matched return nulls on S&P
+and in the equal-market aggregate; Nikkei is borderline before multiplicity
+correction, while DAX and CAC fail. The literature comparison still supports
+the Flag representation and the distinction from ERSE, but no longer supports
+a universal four-market forecastability claim.
+
 Also correcting the record on their empirics: **19 Ken French factor-sorted datasets, monthly,
 July 1969 – June 2024 (660 months), $N$ from 30 to 654, rolling window 120 months.** Average
 pairwise correlation 0.56–0.83. So $q = N/T$ runs up to $654/120 \approx 5.5$. That is not your
@@ -565,6 +575,67 @@ loading path is estimated with under 10% bias, and his test's power collapses fo
 loading variance. Direction persistence may be genuinely hard to detect at my window lengths
 even if it is there — an inconclusive 4.4 will need to be reported as inconclusive rather than
 as absence.
+
+---
+
+## Surrogate-data testing — what Regime 4.8A can and cannot establish
+
+**Theiler, Eubank, Longtin, Galdrikian & Farmer, *Testing for nonlinearity in
+time series: the method of surrogate data*, Physica D 58 (1992),
+[DOI](https://doi.org/10.1016/0167-2789(92)90102-S)** introduced the operative
+logic: specify a null, generate constrained surrogate histories under it, and
+compare a discriminating statistic with that ensemble. **Schreiber & Schmitz,
+*Improved surrogate data for nonlinearity tests*,
+[arXiv:chao-dyn/9909041](https://arxiv.org/abs/chao-dyn/9909041)** proposed the
+iterative amplitude-adjusted Fourier construction used in Regime 4.8A to match
+the observed marginal distribution and autocorrelation more closely.
+
+The transfer to this project is methodological, not a financial precedent.
+Independent IAAFT surrogates preserve each asset's univariate marginal exactly
+and its linear spectrum approximately, but deliberately destroy contemporaneous
+market and sector organisation. They therefore test whether univariate dynamics
+plus overlapping covariance estimation can manufacture Flag persistence. They
+do **not** provide a matched null for a realistic financial covariance process,
+do not preserve nonlinear volatility clustering, and cannot replace the intact
+multivariate calendar-block null. A pass says real cross-sectional organisation
+is necessary; it does not by itself identify the economic mechanism.
+
+## The exact overlap null for *intersecting* windows now exists
+
+*2026-08-05, added while closing Stage 2.*
+
+**Riabov, Tikhonov & Bouchaud, *Eigenvector overlaps of sample covariance matrices with
+intersecting time periods*, [arXiv:2509.25076](https://arxiv.org/abs/2509.25076) (2025).**
+
+They compute exactly the overlap between the eigenvectors of two large empirical
+covariance matrices estimated over **intersecting** time intervals, generalising the
+earlier non-intersecting results, via a Girko linearisation and extended local laws.
+They check numerically and apply to financial data.
+
+This is the closest analytic null this project has to its own measurement design and it
+should be read as such. Every rolling-window comparison here — `T_in = 750`, `step = 14`
+— compares Flags whose estimation windows share `(T-h)/T` of their observations, which
+is precisely the intersecting case. The project's nulls for that overlap are simulated
+(matched block shuffles, IAAFT surrogates, volatility-matched return nulls); theirs is
+closed-form.
+
+Two consequences, neither of which changes a result already recorded.
+
+1. **It sharpens the Alarm 2 diagnostic.** The finding there was that no window length
+   escapes the trade between estimator noise and target amplitude, because the rolling
+   target shares observations with the base and that overlap goes to one as `T` grows.
+   That is a statement their formula makes quantitative rather than empirical, and a
+   future version of this instrument should use it as the analytic null instead of, or
+   alongside, the simulated ones.
+2. **It does not touch the Stage 2 respecification.** The capture design deliberately
+   scores against *disjoint* realised returns, never against another estimated Flag, so
+   the intersecting-window overlap problem is absent by construction rather than
+   corrected. That was the point of the respecification, and this paper is the clearest
+   statement of what was being avoided.
+
+The honest summary: the overlap-noise half of this project's Stage 1 instrument has an
+analytic solution in the literature that postdates its construction. The Stage 2 result
+does not depend on it.
 
 ---
 

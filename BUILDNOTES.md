@@ -1,10 +1,10 @@
 # Build notes — eigenvector dynamics beyond the RMT null
 
-## References
+## Note on the predecessor eigenvector dynamics paper
 
-Allez & Bouchaud wrote this twice and arXiv does not link the two, because they are
-separate submissions rather than versions of one. I worked from the short one for most of
-both dates without knowing the long one existed.
+Allez & Bouchaud wrote this twice and arXiv does not link the two, because they are separate submissions rather than versions of one. I worked from the short one for most of both dates without knowing the long one existed.
+<details>
+<summary>Click here to expand</summary>
 
 - **[arXiv:1203.6228](https://arxiv.org/abs/1203.6228)** — *"Eigenvector dynamics: general
   theory and some applications"*, March 2012. The full paper. **This is the reference to
@@ -44,6 +44,8 @@ Both empirical figures plot $D$ itself, on a $0$–$0.45$ axis, never a ratio:
   being felt, and leads to an increase of $D_{emp}$."* §6 gives one $T^*$ per index —
   Nikkei 600, SP500 700, DAX 450, CAC 40 400 days. The "around two years ($T^* = 500$
   days)" in the caption is a round-number summary of those four.
+
+</details>
 
 ## Stage 1 — instrument
 *2026-08-01*
@@ -486,3 +488,593 @@ It serves as a richer geometry that preserves how the market mode directions are
 | CAC 40 | 0.0830 | 0.020 | 0.0622 | 0.020 / 0.040 |
 
 The lower flag cosine is expected because it incorporates the weaker outer $Y^{(6)}$ movement alongside $Y^{(1)}$ and $Y^{(3)}$. Nonetheless, the representation gate is cleared.
+
+## Stage 1, continued — 2 robustness checks.
+
+*2026-08-03*
+
+Last night, I posted a question to r/quant, wondering *"what is the strongest fair baseline: holding the eigenvectors fixed, EWMA, or a rotationally invariant estimator?"* in anticipation for stage 2. In a reply by *`u/Effective_Manager273`* two robustness checks were suggested alongside their response. I wrap up stage 1 by implementing and running the tests.
+
+### Regime 4.8a — Does the signal require cross-sectional organisation?
+*posed by `u/Effective_Manager273`:*
+
+**What is tested:** Could the measured directional persistence arise from each asset’s individual distribution and autocorrelation, combined with rolling-window estimation, even when there is no organised cross-asset structure?
+
+**Setup:** For each company independently, generate an IAAFT surrogate return history. then for each surrogate recompute the flag and observe mean cosine rotation. This follows the surrogate-testing framework of [Theiler et al.](https://www.sciencedirect.com/science/article/abs/pii/016727899290102S?via%3Dihub) and the iterative construction of [Schreiber–Schmitz](https://arxiv.org/abs/chao-dyn/9909041).
+
+**Verdict:**
+| Panel | Original cosine | After removal | Raw change | Coherence change |
+|---|---:|---:|---:|---:|
+| S&P | 0.1545 | 0.1551 | +0.4% | 13.05% → 15.64%, +19.8% |
+| Nikkei | 0.0706 | 0.0786 | +11.3% | 6.95% → 7.14%, +2.8% |
+| DAX | 0.0561 | 0.0657 | +17.1% | 10.98% → 11.42%, +4.0% |
+| CAC | 0.0622 | 0.0637 | +2.4% | 10.36% → 8.92%, **−13.9%** |
+
+Removing the market factor did not weaken the rotation signal at the complete flag level, but individual Flag layers changed substantially:
+- S&P: market cosine gained 50%, top six lost 39%, while the $4{:}6$ block lost 24%.
+- Nikkei: market cosine lost 21%, top three lost 15%, top six lost 21%.
+- DAX: market lost 30%, top three lost 26%, while top six gained 56%.
+- CAC: top six lost 66%, the $4{:}6$ block lost 40%, while top three gained 17%.
+So the market removal redistributes where the persistence can be observed.
+
+### Regime 4.8b — Remove the market factor and rebuild everything
+*posed by `u/Effective_Manager273`:*
+
+**What is tested:** Is the persistent Flag motion merely changing market beta or movement of the leading market factor?
+
+**Setup:** Define a window where each companies beta is estimated, after removing hte average returns over the panel that day. Extract a new residual flag from this window, and run all the same tests. 
+
+**Verdict:**
+- Nikkei: **Pass**, persistence $p=0.01$, coherence $p=0.001$.
+- DAX: **Pass**, persistence $p=0.01$, coherence $p=0.006$.
+- CAC: **Pass**, persistence $p=0.02$, coherence $p=0.017$.
+- S&P: **Pass**, persistence $p=0.01$, coherence $p=0.001$.
+
+The signal **needs** real cross-sectional organisation and calendar structure.
+
+## Stage 2 — family 1 benchmarks 
+
+*2026-08-03*
+
+To kickoff stage 2, I establish two familes of baslines to compare to: family 1 forecasts the Flag; family  2 forecasts the complete covariance matrix. 
+
+### Benchmark Family 1 — forecast the future Flag
+Every method receives the same current $\mathrm{Flag}(N;1,3,6)$ and predicts its position 42 trading days ahead.
+| Benchmark | Forecast | Purpose |
+|---|---|---|
+| 1.1 Frozen Flag | predict no movement | mandatory zero-motion baseline |
+| 1.2 Constant Velocity | repeat the previous full tangent step | mandatory naive continuation rule |
+| 1.3 ERSE Direction | follow the published within-window ERSE rotation | checks whether temporal prediction reduces to ERSE |
+| 1.4 HCAL Flag | use the current hierarchically filtered eigenspace | structural eigenvector-filter baseline |
+| 1.5 BAHC Flag | use the bootstrapped hierarchical eigenspace | strongest recovered published eigenvector-filter baseline | 
+| 1.6 Retained-Window Flag | use only the observations known to remain in the future rolling window | parameter-free rolling-composition forecast |
+| 1.7 Stationary Roll-Forward | add a stationary fill for the 42 unseen observations | causal conditional rolling-window forecast |
+| 1.8 RiskMetrics EWMA Flag | use the fixed $\lambda=0.94$ EWMA eigenspace | canonical short-memory financial forecast |
+| 1.9 Validation-Geometric EWMA Flag | tune the EWMA half-life on validation Flag loss | objective-matched adaptive forecast |
+| 1.10 Factor CM-IEWMA Flag | use the published multi-timescale factor covariance forecast | external financial forecast |
+
+### Benchmark 1.1 — Frozen Flag
+
+**What is tested:** How wrong am I if I pretend the Flag does not move?
+
+**Setup:** At every forecast origin, predict
+$$
+\widehat{\mathcal F}_{t+42}=\mathcal F_t.
+$$
+Score the market, top-three, top-six and complete nested Flag against its actual position 42 trading days later.
+
+**Verdict:** 
+| Panel | Market | Block $2{:}3$ | Block $4{:}6$ | Top three | Top six | Complete Flag |
+|---|---:|---:|---:|---:|---:|---:|
+| S&P 500 | 0.00367 | 0.03828 | 0.09523 | 0.02594 | 0.04357 | 0.02439 |
+| Nikkei | 0.00467 | 0.04470 | 0.20836 | 0.03074 | 0.10801 | 0.04781 |
+| DAX | 0.00513 | 0.10787 | 0.22201 | 0.07255 | 0.09195 | 0.05654 |
+| CAC 40 | 0.00487 | 0.03935 | 0.20328 | 0.02674 | 0.09966 | 0.04376 |
+
+The market direction is already extremely stable, while the $4{:}6$ block leaves far more error available to remove.
+
+Projector loss is bounded between 0 and 1 and consecutive rolling windows share most of their observations, so the numbers are small, and difficult to interpret. That motivated expressing the future results as skill relative to `Benchmark 1.1 — Frozen Flag`: 
+
+$$
+\mathrm{Skill} = 
+100\left( 1-\frac{\mathrm{Loss}_{\mathrm{model}}}         
+{\mathrm{Loss}_{\mathrm{Frozen}}} \right).
+$$
+
+### Benchmark 1.1-1.5 
+
+In these results I take the equal-market average for benchmark $b$ and component $c$ across panels $m$:
+$$
+S_{b,c}^{\mathrm{combined}}
+=
+\frac14\sum_{m\in\{\mathrm{S\&P,Nikkei,DAX,CAC}\}}
+\mathrm{Skill}_{b,m,c}.
+$$
+
+| Benchmark | What is tested |
+|---|---|
+| 1.1 — Frozen Flag | What happens if I pretend the Flag does not move? |
+| 1.2 — Constant Velocity | What happens if I repeat the previous complete Flag rotation at full length? |
+| 1.3 — ERSE Direction | Can ERSE’s within-window eigenvector correction serve as the next Flag forecast? | 
+| 1.4 — HCAL Flag | Does replacing the current empirical Flag with a single hierarchically filtered correlation Flag improve prediction of the future empirical Flag? |
+| 1.5 — BAHC Flag | Does bootstrap-averaging 1.4 make the eigenspace competitive.| 
+| 1.6 — Retained-Window Flag | Does removing the observations known to expire improve the future Flag forecast? |
+| 1.7 — Stationary Roll-Forward | Does a stationary forecast for the 42 unseen observations add to the retained-window forecast? |
+| 1.8 — RiskMetrics EWMA Flag | Does the canonical fixed-decay financial forecast beat Frozen geometrically? |
+| 1.9 — Validation-Geometric EWMA Flag | Can a validation-selected EWMA timescale beat Frozen geometrically? |
+| 1.10 — Factor CM-IEWMA Flag | Does a published multi-timescale factor covariance forecast predict the future Flag? |
+
+| Benchmark | Market skill | $2{:}3$ skill | $4{:}6$ skill | Top-three skill | Top-six skill | Complete-Flag skill | Worst panel, complete Flag |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Frozen Flag | 0% | 0% | 0% | 0% | 0% | 0% | 0% |
+| Constant Velocity | −59.9% | −53.4% | −50.6% | −53.7% | −54.6% | −53.7% | −57.4% |
+| ERSE Direction | −3252% | −1.5% | −2.1% | −147.2% | −33.2% | −189.9% | −337.1% |
+| HCAL Flag | −492.1% | −892.1% | −326.9% | −895.3% | −414.2% | −535.2% | −1001.6% |
+| BAHC Flag | −391.9% | −761.4% | −304.3% | −762.0% | −355.8% | −458.0% | −881.0% |
+| **Retained-Window Flag** | **+40.9%** | **+38.5%** | **+39.5%** | **+38.5%** | **+40.7%** | **+39.6%** | **+37.4%** |
+| **Stationary Roll-Forward** | **+41.4%** | **+37.8%** | **+39.2%** | **+37.9%** | **+40.5%** | **+39.2%** | **+36.8%** |
+| RiskMetrics EWMA Flag | −1869% | −891.6% | −371.3% | −903.9% | −476.8% | −629.7% | −1121.5% |
+| **Validation-Geometric EWMA Flag** | **+22.2%** | **+25.1%** | **+19.1%** | **+24.9%** | **+17.6%** | **+20.1%** | **+16.2%** |
+| Factor CM-IEWMA Flag | −90.2% | −90.7% | −68.6% | −91.2% | −62.4% | −71.6% | −187.8% |
+
+Of the ten Family 1 baselines, only five are directly aligned with the 42 days ahead rolling Flag target. The remaining methods are established covariance estimators repurposed as external comparators.
+
+| Benchmark | Market skill | $2{:}3$ skill | $4{:}6$ skill | Top-three skill | Top-six skill | Complete-Flag skill | Worst panel, complete Flag |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Frozen Flag | 0% | 0% | 0% | 0% | 0% | 0% | 0% |
+| Constant Velocity | −59.9% | −53.4% | −50.6% | −53.7% | −54.6% | −53.7% | −57.4% |
+| **Retained-Window Flag** | +40.9% | **+38.5%** | **+39.5%** | **+38.5%** | **+40.7%** | **+39.6%** | **+37.4%** |
+| **Stationary Roll-Forward** | **+41.4%** | +37.8% | +39.2% | +37.9% | +40.5% | +39.2% | +36.8% |
+| Validation-Geometric EWMA Flag | +22.2% | +25.1% | +19.1% | +24.9%** | +17.6% | +20.1% | +16.2% |
+
+## Stage 2 — alarms 
+
+*2026-08-04*
+
+### Alarm 1 — rolling-window deletion contamination
+
+**What is tested:** Benchmarks 1.6 and 1.7 score +39.6% and +39.2% against
+Frozen while forecasting nothing about markets. Why?
+
+**Mechanism.** The Stage 2 target is the *rolling* Flag at $t+42$, re-estimated
+from $[t+42-T+1,\;t+42]$. That window shares $T-42$ of its $T$ observations with
+the current window — 83% at $T=250$, 88% at $T=357$. With fixed normalisation,
+
+$$\hat C_{t+42}-\hat C_t=\tfrac1T\big(S_{\text{new}}-S_{\text{drop}}\big),$$
+
+and $S_{\text{drop}}$, the scatter of the 42 departing observations, is **fully
+known at the forecast origin**. Benchmark 1.6 simply deletes them. It is reading
+the estimator's own bookkeeping schedule off the calendar.
+
+**Setup.** Re-base the statistic to the *retained* Flag $\mathcal B_t$, putting
+the deletion in the base point rather than the target. Add a volatility-matched
+null: permute intact 42-day blocks within realised-volatility strata, rebuild the
+entire pipeline. 99 replicates per panel.
+
+**Verdict:** deletion accounts for **39.1% – 49.6%** of outgoing tangent energy
+across all panels and components.
+
+| Panel | complete Flag | market | $2{:}3$ | $4{:}6$ |
+|---|---:|---:|---:|---:|
+| S&P 500 | 0.451 | 0.453 | **0.496** | 0.453 |
+| Nikkei | 0.392 | 0.447 | 0.442 | 0.394 |
+| DAX | **0.391** | 0.453 | 0.447 | 0.399 |
+| CAC 40 | 0.402 | 0.449 | 0.427 | 0.413 |
+
+**The old calendar null was never a control for this.** Log realised-variance
+lag-1 autocorrelation by non-overlapping aggregation scale, S&P:
+
+| scale | observed | calendar-21 null | volatility-42 null |
+|---|---:|---:|---:|
+| 1d | +0.674 | +0.643 | +0.665 |
+| 14d | +0.827 | +0.384 | +0.745 |
+| 42d | +0.771 | **−0.016** | **+0.644** |
+| 63d | +0.739 | +0.005 | +0.707 |
+
+A 21-day block permutation annihilates volatility clustering beyond ~42 days —
+precisely the scale that governs deletion-direction alignment. The
+volatility-matched permutation retains ~83% of it. Under the corrected null,
+only S&P survives Holm across four panels at the published window
+(p = 0.01 / 0.05 / 0.35 / 0.52 for S&P / Nikkei / DAX / CAC).
+
+**Novelty, stated honestly.** Allez & Bouchaud already knew. §6, on Fig. 7:
+
+> "The fact that the empirical (red) curve starts from 0 for $\tau=0$ and
+> increases to reach the stationary noise level at time $\tau=T$ **is simply due
+> to the overlapping between the sliding periods.**"
+
+and every quantitative statement in the paper is then confined to the
+non-overlapping regime — §4: *"two non overlapping time periods, i.e. such that
+$|t-s|>T$"*; §6: *"For times $s<t$ **with $|t-s|>T$**, we define the overlap
+matrix $G^{s,t}$."*
+
+My Stage 2 runs at $h=42$ with $T=250$–$357$, so $|t-s|\ll T$ throughout. **The
+project spent its entire benchmark family inside the regime the source paper
+explicitly fences off.** Alarm 1 is not a correction to the literature. It is the
+discovery that I walked into a hole that was already signposted.
+
+What remains genuinely new is narrower and should be claimed at that size: a
+*quantification* inside the excluded regime (39–49%, four markets), and the
+demonstration that a calendar block permutation fails as a control there while a
+volatility-matched one succeeds. That is a methods note, not a headline.
+
+### Alarm 2 — the window rule buys nothing
+
+**What is tested:** every real-data script sets `T = max(N, 250)` (12 assignment
+sites). On S&P that gives $T=N=357$, so $q\equiv N/T=1.000$ exactly — the
+singular boundary. Median minimum eigenvalue is numerically zero and the
+condition number is unbounded, against $\sim10^3$ / $87$ / $37$ on Nikkei / DAX /
+CAC. The rule is inherited from the replication arm, where it was correct, and it
+contradicts Regime 4.3's own measured optima (999 / 793 / 1032 / 529).
+
+**Setup:** two-arm sweep on S&P, 99 volatility-null replicates per cell. Arm A
+holds $h=42$; arm B holds the deletion fraction $h/T\approx0.112$.
+
+**Verdict, arm B** (isolating $q$): every column monotone, excess grows 5.2×.
+
+| $T$ | $q$ | null mean | observed | excess | $z$ |
+|---:|---:|---:|---:|---:|---:|
+| 357 | 1.000 | 0.0564 | 0.0977 | +0.0414 | 2.95 |
+| 500 | 0.714 | 0.0460 | 0.1347 | +0.0887 | 4.49 |
+| 750 | 0.476 | 0.0376 | 0.1923 | +0.1547 | 5.81 |
+| 1008 | 0.354 | 0.0333 | 0.2480 | +0.2147 | 6.00 |
+
+**But the decisive check kills the reading.** `addition_speed` is the norm of the
+tangent from the retained Flag to the realised future Flag — the size of the
+thing a model is asked to predict. Multiply it by the excess cosine:
+
+| arm | $T$ | $h$ | addition speed | excess cosine | **product** |
+|---|---:|---:|---:|---:|---:|
+| A | 357 | 42 | 0.2249 | 0.0414 | **0.0093** |
+| A | 500 | 42 | 0.1649 | 0.0593 | **0.0098** |
+| A | 750 | 42 | 0.1095 | 0.0607 | **0.0066** |
+| A | 1008 | 42 | 0.0926 | 0.1038 | **0.0096** |
+
+The speed collapses 2.4× exactly as the cosine rises 2.5×. Along arm A the window
+rule trades estimator noise against target amplitude and the explainable motion
+is unchanged. The apparent 2.5× gain in significance was the denominator
+shrinking. *(No uncertainty band on the product yet — four unbanded points. The
+absence of a monotone trend is safe; the word "invariant" is not yet earned.)*
+
+Arm B does raise the product, 0.0093 → 0.0391, but only by stretching the horizon
+to 112 days. Different question, not a better answer.
+
+**What survives:** the $q=1.000$ conditioning failure is real and
+amplitude-independent — S&P's Gaussian NLL and GMV long/short numbers are
+uninterpretable as they stand. The "5× stronger signal at a longer window"
+reading does not survive. At $T=750$ all four panels show positive excess and two
+survive four-panel Holm (0.04 / 0.04 / 0.056 / 0.056) instead of one.
+
+**Why no $T$ escapes.** The target is the rolling Flag, which shares $(T-h)/T$ of
+its observations with the base. As $T$ grows that overlap $\to1$ and the target
+converges onto the thing being forecast *from*. Well-conditioned estimate, or a
+target worth predicting. Not both.
+
+## Stage 2, respecified — variance captured
+
+### The move
+
+Predict the same object; score it against realised returns. Forecasters still
+emit an $N\times6$ orthonormal frame. Only the evaluation changes:
+
+$$\text{capture}^{(d)}=\frac{\lVert\hat Y^{(d)\top}R_{\text{out}}\rVert_F^2}
+{\lVert R_{\text{out}}\rVert_F^2}$$
+
+*How much of next quarter's realised risk does my six-factor model span.*
+
+Three independent parameters, never again conflated: $T_{\text{in}}=750$ chosen
+for conditioning; $T_{\text{out}}=42$ chosen for economic relevance and **is**
+the horizon; `step` $=14$. There is no $h/T$ in this design. The estimation and
+target windows are disjoint by construction, so deletion contamination is
+impossible rather than corrected.
+
+Realised returns are standardised by **estimation-window** volatilities only.
+`standardise(panel)` defaults to `window=21`, which reflect-pads and reads ±10
+days ahead — a strictly-future perturbation moves a window's correlation by
+5.5e−2 at `window=21` and 2.2e−16 at `window=1`. Always pass `window=1`.
+
+### Benchmark — the single ladder
+
+$T_{\text{in}}=750$, $T_{\text{out}}=42$, step 14. Origins: 429 / 426 / 414 / 418.
+Paired mean (entrant − Frozen) at $d=6$, raw capture, t-statistic in brackets.
+
+| Panel | $N$ | random $6/N$ | Frozen | in-sample ceiling | Retained Window | Constant Velocity | EWMA hl=252 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| CAC 40 | 23 | 0.261 | 0.638 | 0.797 | −0.0030 [−8.9] | +0.0004 [+1.0] | +0.0029 [+5.0] |
+| DAX | 29 | 0.207 | 0.591 | 0.764 | −0.0021 [−9.1] | +0.0010 [+3.2] | +0.0015 [+3.3] |
+| Nikkei | 131 | 0.046 | 0.488 | 0.650 | −0.0023 [−13.5] | +0.0003 [+1.5] | +0.0018 [+7.9] |
+| S&P 500 | 357 | 0.017 | 0.425 | 0.582 | −0.0031 [−19.3] | +0.0011 [+7.7] | +0.0032 [+11.6]|
+
+Sign consistency across 4 panels × 3 levels × 2 modes (raw and
+market-neutralised), counting cells with $|t|>2$:
+
+| entrant | significantly positive | significantly negative |
+|---|---:|---:|
+| Retained Window | 0 / 24 | **22 / 24** |
+| Constant Velocity | 19 / 24 | 0 / 24 |
+| EWMA hl=126 | 17 / 24 | 0 / 24 |
+| **EWMA hl=252** | **24 / 24** | 0 / 24 |
+
+**Retained Window went from +39.56% to losing significantly on 22 of 24 cells.**
+The artifact is not corrected, it is gone, and a real estimator wins in its
+place. That is the respecification working exactly as designed.
+
+*Caveat: origins are pooled, no train/validation/test split, and the EWMA
+half-lives were fixed by hand rather than selected on validation. The sign
+pattern is the result; the t-statistics treat origins as independent and are
+therefore too large. Must be redone split-clean with circular block intervals at
+block length $\lceil(T_{\text{in}}+T_{\text{out}})/\text{step}\rceil=57$ origins,
+~7 independent blocks over full history.*
+
+### The ceiling is not free
+
+The in-sample top-6 of $R_{\text{out}}$ *is* the exact attainable maximum. But
+with $T_{\text{out}}=42$ observations and $N$ up to 357, it overfits the
+realisation badly, so a large part of the skill denominator is noise.
+
+**Test:** simulate the future from the estimation-window covariance itself — a
+world where the true subspace does not move, so honest headroom is exactly zero.
+Compute ceiling − frozen anyway:
+
+| Panel | $N$ | $N/T_{\text{out}}$ | frozen | ceiling | headroom that is pure overfitting |
+|---|---:|---:|---:|---:|---:|
+| CAC 40 | 23 | 0.55 | 0.596 | 0.708 | **+0.112** |
+| DAX | 29 | 0.69 | 0.530 | 0.649 | **+0.119** |
+| Nikkei | 131 | 3.12 | 0.413 | 0.528 | **+0.115** |
+| S&P 500 | 357 | 8.50 | 0.380 | 0.485 | **+0.106** |
+
+Against a measured CAC headroom of 0.159, **~70% is fake**. Skill as originally
+specified is ~3.4× too optimistic in its denominator. Same failure mode as
+Alarm 1, reintroduced into the metric built to escape it.
+
+Corrected:
+
+| Panel | naive headroom | fake | **real headroom** | best entrant | naive skill | **honest skill** |
+|---|---:|---:|---:|---:|---:|---:|
+| CAC 40 | 0.159 | 0.112 | **0.047** | +0.0029 | 1.8% | **6.2%** |
+| DAX | 0.173 | 0.119 | **0.055** | +0.0015 | 0.8% | 2.7% |
+| Nikkei | 0.162 | 0.115 | **0.047** | +0.0018 | 1.1% | 3.8% |
+| S&P 500 | 0.158 | 0.106 | **0.052** | +0.0032 | 2.0% | **6.1%** |
+
+Two things worth recording. The bias is stable at 0.106–0.119 while $N$ varies
+16×, so a single stationary-null correction is well behaved. And a split-half
+cross-fit ceiling does **not** work — fitting top-6 on days 1–21 and scoring on
+22–42 gives, under stationarity, a "ceiling" *below* Frozen (0.508 vs 0.588 on
+CAC). It is a lower bound, not a ceiling. The fix is a per-origin stationary
+ceiling null, symmetric with the Haar floor.
+
+The real headroom is 0.047–0.055 on all four panels while $N$ runs 23 → 357.
+Second near-invariance, alongside the flat product of Alarm 2. Both need error
+bars before either is claimed.
+
+### The rotationally-invariant estimator blind spot
+
+Covariance-family entrants on the same ladder, $d=6$, minus Frozen:
+
+| Panel | QIS | Ledoit–Wolf | OAS | EWMA hl=252 |
+|---|---:|---:|---:|---:|
+| CAC 40 | +0.0008 | +0.0008 | +0.0008 | +0.0032 |
+| DAX | +0.0003 | +0.0003 | +0.0003 | +0.0020 |
+| Nikkei | +0.0001 | +0.0001 | +0.0001 | +0.0021 |
+| S&P 500 | −0.0002 | −0.0002 | −0.0002 | +0.0033 |
+
+The three shrinkage estimators agree to four decimal places on every panel. Not a
+bug. **Linear shrinkage toward a scaled identity leaves eigenvectors exactly
+unchanged, and every rotationally-invariant estimator — QIS included — is defined
+as optimal eigenvalue shrinkage with the sample eigenvectors held fixed.** On a
+subspace metric the entire RIE class is pinned at zero by construction. The
+residual is preprocessing noise.
+
+The covariance-cleaning literature has not tried and failed to forecast
+correlation geometry. The question is structurally outside its frame. EWMA wins
+because it is the only entrant in the ladder that actually rotates the frame.
+
+### What the number means
+
+$1-\text{capture}$ is the share of next quarter's cross-sectional risk the
+six factors do not see.
+
+| Panel | $N$ | Frozen spans | **unspanned** | residual vol cut, perfect foresight | residual vol cut, best real model |
+|---|---:|---:|---:|---:|---:|
+| CAC 40 | 23 | 63.8% | 36.2% | 6.75% | **0.40%** |
+| DAX | 29 | 59.1% | 40.9% | 6.90% | **0.18%** |
+| Nikkei | 131 | 48.8% | 51.2% | 4.69% | **0.17%** |
+| S&P 500 | 357 | 42.5% | **57.5%** | 4.63% | **0.28%** |
+
+0.2–0.4% off residual volatility is below transaction costs and below the
+estimation error in the volatility forecast sitting next to it. The oracle line
+says the same from the other side: perfect foresight of the future Flag buys
++1.7% to +6.2% GMV long-only, and a real model reaches ~5% of that.
+
+So the forecasting result is not the finding. The **level** is:
+
+> A six-factor risk model does not span half of the S&P 500's next-quarter
+> cross-sectional risk. Choosing its six directions with perfect hindsight, it
+> still misses 52%. The forecastable part of that blindness is worth 0.3% of
+> residual volatility.
+
+The forecast result's job is to prove the metric is live. It does that — 24/24,
+four markets, while simultaneously killing the artifact that dominated the old
+leaderboard. Then it gets one paragraph.
+---
+
+## Model 4.1 — solving the first-order problem exactly, and losing anyway
+
+### The objective is linear in the projector, so only one block of any correction can matter
+
+The capture score is an inner product against a projector,
+
+$$\text{capture}=\frac{\lVert\hat Y^\top R_{\rm out}\rVert_F^2}{\lVert R_{\rm out}\rVert_F^2}=\big\langle P,\;\tilde S_{\rm out}\big\rangle,\qquad P=\hat Y\hat Y^\top,\quad \tilde S_{\rm out}=\frac{R_{\rm out}R_{\rm out}^\top}{\operatorname{tr}R_{\rm out}R_{\rm out}^\top}.$$
+
+Linear in $P$, so by linearity of expectation the Bayes-optimal frame is the top-6
+eigenspace of $M_t=\mathbb E[\tilde S_{\rm out}\mid\mathcal F_t]$. The problem is not
+"forecast eigenvectors"; it is *forecast one matrix, then diagonalise it*. The object
+to forecast is the **trace-normalised** second moment, not the covariance — volatility
+level cancels exactly, which is why the oracle line found marginal vol to dominate the
+covariance problem while contributing nothing here.
+
+Perturb a base estimator, $\hat M_t=\hat C_t+\varepsilon G$, with $\hat C_t$ having
+eigenpairs $(\lambda_i,u_i)$, $U_6=[u_1..u_6]$, $U_\perp=[u_7..u_N]$. The Riesz
+projector for the group $\{\lambda_1..\lambda_6\}$ has first variation
+
+$$\delta P=\varepsilon\!\!\sum_{i\le6}\sum_{j>6}\frac{u_j^\top Gu_i}{\lambda_i-\lambda_j}\big(u_ju_i^\top+u_iu_j^\top\big)+O(\varepsilon^2),$$
+
+the within-group terms cancelling identically. So $\delta P$ depends on $G$ **only**
+through $G^{\rm oi}:=U_\perp^\top GU_6\in\mathbb R^{(N-6)\times6}$. The within-top-6
+block, the within-complement block and the entire diagonal are invisible to the score,
+and
+
+$$\delta(\text{capture})=2\varepsilon\Big\langle \frac{G^{\rm oi}}{\Lambda},\;\Sigma^{\rm oi}_{\rm out}\Big\rangle,\qquad \Lambda_{ji}=\lambda_i-\lambda_j,\quad \Sigma^{\rm oi}_{\rm out}=U_\perp^\top\tilde S_{\rm out}U_6.$$
+
+`src/coupling.py` implements this; `tests/test_coupling.py` checks it rather than
+asserting it. A diagonal correction in the sample eigenbasis moves the projector by
+$<10^{-9}$; edits confined to the top-6 or complement blocks move individual columns
+but leave the projector fixed to $10^{-9}$ and the capture identical to $10^{-12}$; and
+`score_gradient` matches a finite difference of realised capture with error falling
+in proportion to $\varepsilon$.
+
+### The RIE result, refined — it was the pipeline, not QIS
+
+The structural claim is right and now measured: the **shrinkage step** of Ledoit–Wolf,
+OAS and QIS has visible block $\lVert U_\perp^\top GU_6\rVert\sim10^{-16}$ on every
+sampled origin of every panel. Linear shrinkage toward $\mu I$ and nonlinear eigenvalue
+cleaning alike are pinned to Frozen by construction, not approximately.
+
+But the reported ladder does not show three exact zeros. LW and OAS give $0.0000$;
+QIS gives $-0.0002$ to $-0.0011$. The cause is not QIS. The ladder renormalises every
+estimate to a correlation matrix, and $D^{-1/2}SD^{-1/2}$ is a **congruence, not a
+similarity**: it preserves eigenvectors only when $D$ is a scalar. Shrinking a
+constant-diagonal matrix toward a multiple of the identity leaves the diagonal
+constant, so LW and OAS pass through it untouched. QIS cleans each eigenvalue
+differently, its diagonal is not constant, and the renormalisation rotates the frame —
+measured visible block $2.5\times10^{-2}$, $\lVert\delta P\rVert=0.04$ on S&P.
+
+So the earlier reading "the residual is preprocessing noise" was correct, and is now
+identified rather than assumed. Both stages are recorded per panel as
+`rie_shrinkage_invisible` and `rie_invisible_after_renormalisation`.
+
+### The split-clean ladder, and what it costs the old t-statistics
+
+`scripts/stage2_capture_ladder.py` regenerates the ladder reproducibly: half-life
+selected on validation, comparison on test only, circular-block intervals at
+$\lceil(T_{\rm in}+T_{\rm out})/\text{step}\rceil=57$ origins. Calibration against the
+uncommitted original run reproduces it — CAC Frozen 0.6411 / ceiling 0.7971 against a
+recorded 0.638 / 0.797 — once the realised block is scaled by estimation-window
+per-name volatilities **without** day-flattening. That convention matters: flattening
+days moves CAC Frozen from 0.641 to 0.564, so it is a flag in the code, not a silent
+default.
+
+| Panel | $N$ | test origins | random $6/N$ | Frozen | ceiling | ceiling bias | **real headroom** |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| CAC 40 | 23 | 121 | 0.261 | 0.618 | 0.784 | 0.078 | **0.088** |
+| DAX | 29 | 120 | 0.207 | 0.579 | 0.749 | 0.083 | **0.087** |
+| Nikkei | 131 | 114 | 0.046 | 0.473 | 0.647 | 0.089 | **0.086** |
+| S&P 500 | 357 | 118 | 0.017 | 0.442 | 0.614 | 0.078 | **0.093** |
+
+The near-invariance of real headroom survives the split-clean redo and tightens:
+0.086–0.093 while $N$ runs 23 → 357. (It sits above the 0.047–0.055 recorded earlier
+because that figure pooled all origins and this one is test-only; the *invariance*, not
+the level, is the reproducible part.)
+
+The predeclared worry about pooled t-statistics was justified, and partially. Best
+EWMA against Frozen, split-clean:
+
+| Panel | best EWMA | paired improvement | 95% circular-block CI | excludes zero |
+|---|---|---:|---|:--:|
+| CAC 40 | hl=126 | +0.0043 | [−0.0041, +0.0126] | **no** |
+| DAX | hl=252 | +0.0082 | [+0.0058, +0.0109] | yes |
+| Nikkei | hl=252 | +0.0081 | [+0.0065, +0.0098] | yes |
+| S&P 500 | hl=126 | +0.0145 | [+0.0115, +0.0175] | yes |
+
+So the 24/24 sign pattern survives and the *effect* is larger than the pooled estimate,
+not smaller — but CAC, the panel with the smallest $N$ and the 24/24 headline, loses
+significance once its origins are correctly treated as ~2 independent blocks. Three of
+four panels stand.
+
+### Model 4.1 — five parameters, every one of them visible
+
+$$\hat M_t=\underbrace{\hat C_t(\theta)}_{\text{EWMA correlation}}+\varepsilon\sum_{m=1}^{3}\beta_m\Big(U_\perp A^{(m)}_tU_6^\top+U_6A^{(m)\top}_tU_\perp^\top\Big)$$
+
+with $A^{(1)}$ the fast/slow EWMA difference projected into the visible block,
+$A^{(2)}$ the realised Grassmann log at the base frame, $A^{(3)}=z_tA^{(1)}$ with $z_t$
+a causally standardised log realised variance. Three $\beta$, one $\varepsilon$, one
+$\theta$. The family contains Frozen ($\varepsilon=0,\theta\to\infty$), every EWMA
+($\varepsilon=0$) and momentum ($\beta=e_2$) exactly, so the comparison is nested.
+$\beta$ is fitted closed-form on train; $\varepsilon$, $\theta$ and the fit are chosen
+on validation by **realised capture of the exactly corrected frame** — the perturbation
+theory selects what to fit, it never does the scoring. The eigengap floor never bound
+on any panel (0.000), so the $1/\Lambda$ weight is reporting data rather than a clip.
+
+**Result. The predeclared stopping rule was cleared on 3 of 4 panels and the gain did
+not survive to test on any of them.**
+
+| Panel | selected $\theta$ | selected $\varepsilon$ | validation gate | gate CI low | passed | **test vs EWMA** | 95% CI |
+|---|---:|---:|---:|---:|:--:|---:|---|
+| CAC 40 | 252 | 0.020 | +0.0004 | +0.0004 | yes | **−0.0002** | [−0.0018, +0.0013] |
+| DAX | ∞ | 0.200 | +0.0010 | +0.0010 | yes | **−0.0029** | [−0.0046, −0.0014] |
+| Nikkei | 252 | **0.000** | 0.0000 | 0.0000 | **no** | 0.0000 | [0.0000, 0.0000] |
+| S&P 500 | 252 | 0.100 | +0.0001 | +0.0001 | yes | **−0.0001** | [−0.0002, +0.0000] |
+
+Nikkei is the cleanest line in the table. Offered a free amplitude, validation chose
+$\varepsilon=0$ — the correction was switched off and the model collapsed onto plain
+EWMA. DAX is the sharpest: the model is significantly *worse* than the EWMA it
+contains, its interval excluding zero on the wrong side. The two remaining panels are
+indistinguishable from their own baseline.
+
+The validation gains were real but of order $10^{-4}$, and a gate that only asks
+"is the improvement consistent across blocks" will pass a consistent $10^{-4}$. That is
+a lesson about the gate, and it is recorded rather than patched: the rule was
+predeclared, it was applied verbatim, and no feature hunting followed.
+
+### Optimising the risk is not optimising the geometry — and it does not matter
+
+A model can be trained to predict *where the subspace goes* or to maximise *how much
+realised variance it spans*. These coincide only if realised variance is isotropic
+across the complement, which it is not. Four fits were run, differing only in the loss
+and never in the parameter count: `gradient` (risk loss, first order), `ridge`
+(gap-weighted geometry), `geometric` (pure geometry, $1/\Lambda$ dropped) and `direct`
+(exact capture search over the sphere).
+
+| Panel | cos(geometric, risk) | cos(ridge, risk) | cos(direct, risk) | spread in validation capture |
+|---|---:|---:|---:|---:|
+| CAC 40 | **−0.16** | +0.45 | +0.92 | 0.00458 → 0.00493 |
+| DAX | +0.77 | +0.73 | +1.00 | 0.00233 → 0.00256 |
+| Nikkei | +0.87 | +0.21 | +0.99 | all 0.00338 |
+| S&P 500 | +0.97 | +0.54 | +1.00 | 0.00201 → 0.00209 |
+
+Two things. The distinction is real and $N$-dependent: on the smallest panel the pure
+geometry loss picks a direction essentially orthogonal to — and slightly opposed to —
+the risk-optimal one, while on S&P the two agree at 0.97. And `direct` agrees with
+`gradient` at 0.92–1.00 everywhere, so the first-order surrogate is not misleading;
+the linearisation is doing its job.
+
+But the fourth column is the finding. **All four losses score within $4\times10^{-4}$
+capture of each other.** The objective is flat in $\beta$: you can rotate the fitted
+direction by 90 degrees and lose almost nothing. That is a stronger statement than the
+headroom argument, because it says the failure is not "we picked the wrong loss" or
+"we picked the wrong features" — there is no direction in this feature space that the
+metric rewards appreciably.
+
+### What this closes
+
+The first-order condition was solved exactly. Every parameter was spent on the only
+block the metric can see, the RIE class was shown to be structurally pinned rather than
+merely unlucky, the label was constructed rather than approximated, four different
+objectives were compared, and a predeclared stopping rule was honoured. The result is
+that a metric-aware model **does not beat the EWMA it contains** on any of four
+markets, and on one of them is significantly worse.
+
+That converts the earlier claim. Not "we tried EWMA and nothing else worked", but:
+
+> The realised-variance capture of a six-factor risk model is not meaningfully
+> forecastable from the correlation geometry. The problem's first-order structure
+> admits exactly one $(N-6)\times6$ block of influence; a five-parameter model
+> targeting that block directly, fitted four ways, cannot improve on a
+> one-parameter exponential kernel. The ceiling is not a limitation of the model
+> class — the objective is flat.
+
+The level result from the respecified Stage 2 is unchanged and remains the finding:
+a six-factor model does not span half of the S&P 500's next-quarter cross-sectional
+risk, and with perfect hindsight of its own six directions it still misses 39%.
+The forecastable part of that blindness is worth 0.5–1.2% of residual volatility,
+essentially all of which a plain EWMA already collects.
