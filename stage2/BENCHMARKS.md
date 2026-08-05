@@ -1,5 +1,13 @@
 # Stage 2 benchmark registry
 
+> **Superseded, 2026-08-05.** Rows 1.1–1.10 score a *geometric* loss against
+> another estimated Flag. The final Stage 2 design scores realised returns
+> instead, which removed the deletion artifact rather than correcting it — under
+> the capture score Retained Window went from +39.56% to losing significantly on
+> 22 of 24 cells. The live ladder is `scripts/stage2_capture_ladder.py` and the
+> final model is `scripts/stage2_model4_1_visible_coupling.py`. This registry is
+> retained as the frozen, reproducible historical contest.
+
 This registry was frozen before fitting the first learned rotation model. Regime
 4.9 subsequently identified deterministic rolling deletion as a structural
 confound in that contest. Rows 1.1–1.10 remain frozen and reproducible as

@@ -295,12 +295,26 @@ def summarise(series):
 
 
 def _completed(path):
+    """Read a checkpoint file, discarding duplicated replicate rows.
+
+    The checkpoint is an append-only CSV, which is safe for one writer resuming
+    itself but not for two processes filling the same cell concurrently: both
+    read the same ``done`` set, both compute the same replicates, and both
+    append.  Duplicates then inflate the null sample with exact copies, which
+    adds no information while moving the empirical quantiles and the p-value
+    denominator.  Deduplicating on read makes the null insensitive to that, and
+    keeps ``done`` correct so the surviving writer resumes cleanly.
+
+    Do not run two processes against the same cell.  This only limits the damage.
+    """
     if not path.exists():
         return pd.DataFrame()
     try:
-        return pd.read_csv(path)
+        frame = pd.read_csv(path)
     except (pd.errors.EmptyDataError, OSError):
         return pd.DataFrame()
+    keys = [name for name in ("replicate", "component") if name in frame]
+    return frame.drop_duplicates(subset=keys, keep="first") if keys else frame
 
 
 def _append(path, frame):

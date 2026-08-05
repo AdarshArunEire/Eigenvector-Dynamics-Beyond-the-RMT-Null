@@ -167,6 +167,9 @@ def test_retained_window_ignores_observations_known_to_expire():
 
 
 def test_factor_cm_iewma_returns_a_valid_flag():
+    # cvxcovariance supplies the authors' official CM-IEWMA implementation and
+    # is optional; skip cleanly when it is absent.
+    pytest.importorskip("cvx.covariance")
     returns = np.random.default_rng(13).normal(size=(12, 90))
     prediction = factor_cm_iewma_flag(returns, factor_rank=6)
     assert prediction.shape == (12, 6)

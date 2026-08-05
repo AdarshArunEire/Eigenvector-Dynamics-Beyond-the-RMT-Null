@@ -1,0 +1,56 @@
+
+===== 2026-08-04T14:26:20.126733+00:00 /usr/bin/python scripts/alarm2_window_sweep.py --label sp500_full --mode collect --outdir /sessions/nifty-wizardly-mayer/mnt/Eigenvector Dynamics Beyond the RMT Null/results/alarm2_window_sweep --cells 500:42
+
+Design
+arm   T  horizon     q  deletion_fraction  origins  independent_blocks
+  A 500       42 0.714              0.084      436              10.381
+
+Observed (no null required)
+arm   T  horizon  observed_addition_cosine  observed_full_cosine  deletion_attributed_fraction  projection_residual_cosine
+  A 500       42                    0.1275                0.1673                        0.4565                      0.0716
+
+===== 2026-08-04T14:34:21.278057+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/alarm2_window_sweep.py --label sp500_full --mode collect --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep --cells 500:42
+
+Design
+arm   T  horizon     q  deletion_fraction  origins  independent_blocks
+  A 500       42 0.714              0.084      436              10.381
+
+Observed (no null required)
+arm   T  horizon  observed_addition_cosine  observed_full_cosine  deletion_attributed_fraction  projection_residual_cosine
+  A 500       42                    0.1275                0.1673                        0.4565                      0.0716
+
+Volatility-matched null
+arm   T  horizon      q  observed_addition_cosine  null_mean  null_sd  excess      z  mde_excess      p  n_null
+  A 500       42 0.7140                    0.1275     0.0658   0.0077  0.0617 8.0157      0.0105 0.1429       6
+
+===== 2026-08-04T19:12:25.286231+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/alarm2_window_sweep.py --label sp500_full --mode collect --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep --cells all
+
+Design
+arm    T  horizon     q  deletion_fraction  origins  independent_blocks
+A+B  357       42 1.000              0.118      446              13.938
+  A  500       42 0.714              0.084      436              10.381
+  A  750       42 0.476              0.056      418               6.967
+  A 1008       42 0.354              0.042      400               5.128
+  B  500       56 0.714              0.112      434               9.864
+  B  750       84 0.476              0.112      412               6.242
+  B 1008      112 0.354              0.111      390               4.432
+
+Observed (no null required)
+arm    T  horizon  observed_addition_cosine  observed_full_cosine  deletion_attributed_fraction  projection_residual_cosine
+A+B  357       42                    0.0977                0.1545                        0.4508                      0.0338
+  A  500       42                    0.1275                0.1673                        0.4565                      0.0716
+  A  750       42                    0.1423                0.2111                        0.4701                      0.1107
+  A 1008       42                    0.1824                0.2446                        0.4887                      0.1504
+  B  500       56                    0.1347                0.1908                        0.4451                      0.0760
+  B  750       84                    0.1923                0.2619                        0.4631                      0.1217
+  B 1008      112                    0.2480                0.3292                        0.4738                      0.1699
+
+Volatility-matched null
+arm    T  horizon      q  observed_addition_cosine  null_mean  null_sd  excess      z  mde_excess      p  n_null
+A+B  357       42 1.0000                    0.0977     0.0564   0.0140  0.0414 2.9492      0.0206 0.0100      99
+  A  500       42 0.7140                    0.1275     0.0682   0.0164  0.0593 3.6204      0.0241 0.0100      99
+  A  750       42 0.4760                    0.1423     0.0816   0.0185  0.0607 3.2795      0.0280 0.0100      99
+  A 1008       42 0.3542                    0.1824     0.0787   0.0220  0.1038 4.7100      0.0356 0.0100      99
+  B  500       56 0.7140                    0.1347     0.0460   0.0197  0.0887 4.4949      0.0310 0.0100      99
+  B  750       84 0.4760                    0.1923     0.0376   0.0266  0.1547 5.8125      0.0391 0.0100      99
+  B 1008      112 0.3542                    0.2480     0.0333   0.0358  0.2147 6.0043      0.0592 0.0100      99

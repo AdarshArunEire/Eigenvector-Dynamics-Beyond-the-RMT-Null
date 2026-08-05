@@ -1,0 +1,31 @@
+  dax_full: half-life 126 done [2s]
+  dax_full: half-life 252 done [3s]
+  dax_full: half-life 504 done [4s]
+  dax_full: half-life inf done [5s]
+
+What is tested: Model 4.1, a correction confined to the visible block U_perp^T . U_6, 5 parameters.
+Predeclared stopping rule: Model 4.1 beats the validation-selected EWMA on validation origins with a circular-block interval at 57-origin blocks excluding zero.
+Setup: beta fitted closed-form on train; epsilon, theta and the fit chosen on validation by realised capture; test scored once.
+
+   label  N  selected_half_life selected_fit  selected_epsilon  gap_floor_bound_fraction  max_offdiagonal_collinearity  validation_gate_improvement  validation_gate_ci_low  stopping_rule_passed
+dax_full 29                 inf     gradient            0.2000                    0.0000                        0.3124                       0.0010                  0.0010                  True
+
+Test origins, paired:
+   label  test_frozen_capture  test_model_capture  test_versus_ewma  test_versus_ewma_ci_low  test_versus_ewma_ci_high  test_versus_frozen  test_versus_frozen_ci_low  test_versus_frozen_ci_high
+dax_full               0.5793              0.5846           -0.0029                  -0.0046                   -0.0014              0.0053                     0.0032                      0.0077
+
+Fitted loadings (unit norm; amplitude lives in epsilon):
+   label  beta_fast_slow  beta_momentum  beta_stress
+dax_full          +0.688         -0.703       +0.181
+
+Risk loss vs geometry loss -- cosine of each fit's beta with the risk-optimal beta, at the selected half-life.
+A value near 1 means optimising the geometry and optimising the realised risk pick the same direction on this data.
+   label  fit_agreement_ridge  fit_agreement_geometric  fit_agreement_direct
+dax_full               +0.733                   +0.769                +1.000
+
+Validation capture by fit, at each fit's own best epsilon:
+fit        direct  geometric  gradient    ridge
+label                                          
+dax_full +0.00256   +0.00238  +0.00256 +0.00233
+
+Verdict: PASS -- validation gate cleared on 1/1 panels. Proceed to the test reading above.

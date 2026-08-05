@@ -600,6 +600,45 @@ do not preserve nonlinear volatility clustering, and cannot replace the intact
 multivariate calendar-block null. A pass says real cross-sectional organisation
 is necessary; it does not by itself identify the economic mechanism.
 
+## The exact overlap null for *intersecting* windows now exists
+
+*2026-08-05, added while closing Stage 2.*
+
+**Riabov, Tikhonov & Bouchaud, *Eigenvector overlaps of sample covariance matrices with
+intersecting time periods*, [arXiv:2509.25076](https://arxiv.org/abs/2509.25076) (2025).**
+
+They compute exactly the overlap between the eigenvectors of two large empirical
+covariance matrices estimated over **intersecting** time intervals, generalising the
+earlier non-intersecting results, via a Girko linearisation and extended local laws.
+They check numerically and apply to financial data.
+
+This is the closest analytic null this project has to its own measurement design and it
+should be read as such. Every rolling-window comparison here — `T_in = 750`, `step = 14`
+— compares Flags whose estimation windows share `(T-h)/T` of their observations, which
+is precisely the intersecting case. The project's nulls for that overlap are simulated
+(matched block shuffles, IAAFT surrogates, volatility-matched return nulls); theirs is
+closed-form.
+
+Two consequences, neither of which changes a result already recorded.
+
+1. **It sharpens the Alarm 2 diagnostic.** The finding there was that no window length
+   escapes the trade between estimator noise and target amplitude, because the rolling
+   target shares observations with the base and that overlap goes to one as `T` grows.
+   That is a statement their formula makes quantitative rather than empirical, and a
+   future version of this instrument should use it as the analytic null instead of, or
+   alongside, the simulated ones.
+2. **It does not touch the Stage 2 respecification.** The capture design deliberately
+   scores against *disjoint* realised returns, never against another estimated Flag, so
+   the intersecting-window overlap problem is absent by construction rather than
+   corrected. That was the point of the respecification, and this paper is the clearest
+   statement of what was being avoided.
+
+The honest summary: the overlap-noise half of this project's Stage 1 instrument has an
+analytic solution in the literature that postdates its construction. The Stage 2 result
+does not depend on it.
+
+---
+
 ## Where that leaves the project
 
 **Taken, and you should stop claiming it.** Detecting non-stationarity via two-window eigenvector

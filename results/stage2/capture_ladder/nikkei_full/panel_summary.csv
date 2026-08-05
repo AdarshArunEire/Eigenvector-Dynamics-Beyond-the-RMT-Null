@@ -1,0 +1,2 @@
+label,N,T_in,T_out,step,n_origins,n_train,n_validation,n_test,block_length_origins,independent_blocks,random_floor,frozen_capture,ceiling_capture,naive_headroom,ceiling_bias,real_headroom,validation_selected_ewma_half_life,rie_shrinkage_invisible,rie_invisible_after_renormalisation
+nikkei_full,131,750,42,14,417,196,53,114,57,2.0,0.04580152671755725,0.4724607872783187,0.6469428921897901,0.17448210491147137,0.08850244693696555,0.08597965797450582,252.0,True,False

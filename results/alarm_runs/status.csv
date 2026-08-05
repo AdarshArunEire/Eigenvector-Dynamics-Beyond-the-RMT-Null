@@ -1,0 +1,8 @@
+stage,ok,returncode,minutes,log
+stage 0 preflight,True,0,0.0,
+stage 1 alarm2 sp500 window sweep,True,0,263.3,C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm_runs\logs\stage1_alarm2_sp500.log
+stage 2 alarm2 nikkei_full T=750,True,0,6.04,C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm_runs\logs\stage2_alarm2_nikkei_full.log
+stage 2 alarm2 dax_full T=750,True,0,3.3,C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm_runs\logs\stage2_alarm2_dax_full.log
+stage 2 alarm2 cac40_full T=750,True,0,3.23,C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm_runs\logs\stage2_alarm2_cac40_full.log
+stage 3 alarm2 collect,True,0,0.03,C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm_runs\logs\stage3_alarm2_collect.log
+stage 4 alarm3 detection power,True,0,45.36,C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm_runs\logs\stage4_alarm3_power.log

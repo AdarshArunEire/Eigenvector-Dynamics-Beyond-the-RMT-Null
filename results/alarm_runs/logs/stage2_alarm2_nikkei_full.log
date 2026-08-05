@@ -1,0 +1,98 @@
+
+===== 2026-08-04T18:59:51.128809+00:00 C:\Users\Adarsh Arun\AppData\Local\Python\pythoncore-3.14-64\python.exe scripts/regime4_9_deletion_attribution.py --label nikkei_full --T 750 --horizon 42 --shuffles 99 --null volatility --outdir C:\Users\Adarsh Arun\Downloads\Eigenvector Dynamics Beyond the RMT Null\results\alarm2_window_sweep
+nikkei_full: N=131, days=6629, T=750, h=42, step=14, shuffles=99
+    volatility null 12/99
+    volatility null 13/99
+    volatility null 14/99
+    volatility null 15/99
+    volatility null 16/99
+    volatility null 17/99
+    volatility null 18/99
+    volatility null 19/99
+    volatility null 20/99
+    volatility null 21/99
+    volatility null 22/99
+    volatility null 23/99
+    volatility null 24/99
+    volatility null 25/99
+    volatility null 26/99
+    volatility null 27/99
+    volatility null 28/99
+    volatility null 29/99
+    volatility null 30/99
+    volatility null 31/99
+    volatility null 32/99
+    volatility null 33/99
+    volatility null 34/99
+    volatility null 35/99
+    volatility null 36/99
+    volatility null 37/99
+    volatility null 38/99
+    volatility null 39/99
+    volatility null 40/99
+    volatility null 41/99
+    volatility null 42/99
+    volatility null 43/99
+    volatility null 44/99
+    volatility null 45/99
+    volatility null 46/99
+    volatility null 47/99
+    volatility null 48/99
+    volatility null 49/99
+    volatility null 50/99
+    volatility null 51/99
+    volatility null 52/99
+    volatility null 53/99
+    volatility null 54/99
+    volatility null 55/99
+    volatility null 56/99
+    volatility null 57/99
+    volatility null 58/99
+    volatility null 59/99
+    volatility null 60/99
+    volatility null 61/99
+    volatility null 62/99
+    volatility null 63/99
+    volatility null 64/99
+    volatility null 65/99
+    volatility null 66/99
+    volatility null 67/99
+    volatility null 68/99
+    volatility null 69/99
+    volatility null 70/99
+    volatility null 71/99
+    volatility null 72/99
+    volatility null 73/99
+    volatility null 74/99
+    volatility null 75/99
+    volatility null 76/99
+    volatility null 77/99
+    volatility null 78/99
+    volatility null 79/99
+    volatility null 80/99
+    volatility null 81/99
+    volatility null 82/99
+    volatility null 83/99
+    volatility null 84/99
+    volatility null 85/99
+    volatility null 86/99
+    volatility null 87/99
+    volatility null 88/99
+    volatility null 89/99
+    volatility null 90/99
+    volatility null 91/99
+    volatility null 92/99
+    volatility null 93/99
+    volatility null 94/99
+    volatility null 95/99
+    volatility null 96/99
+    volatility null 97/99
+    volatility null 98/99
+    volatility null 99/99
+  component  mean_full_cosine  mean_deletion_attributed_fraction  mean_full_residual_cosine  mean_addition_cosine  volatility_null_mean  volatility_p
+   market_1            0.2581                             0.4753                     0.1502                0.2201                0.0681        0.0093
+  block_2_3            0.2012                             0.4867                     0.1057                0.1498                0.0766        0.0093
+  block_4_6            0.1098                             0.4780                     0.0517                0.0734                0.0488        0.2037
+      top_3            0.2020                             0.4862                     0.1065                0.1499                0.0759        0.0093
+      top_6            0.1050                             0.4863                     0.0460                0.0712                0.0431        0.1574
+flag_nested            0.1254                             0.4716                     0.0644                0.0856                0.0520        0.0278

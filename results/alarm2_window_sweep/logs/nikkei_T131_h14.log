@@ -1,0 +1,10 @@
+nikkei_full: N=131, days=6629, T=131, h=14, step=14, shuffles=24
+    volatility null 1/24
+    volatility null 2/24
+    volatility null 3/24
+    volatility null 4/24
+    volatility null 5/24
+    volatility null 6/24
+    volatility null 7/24
+    volatility null 8/24
+    volatility null 9/24

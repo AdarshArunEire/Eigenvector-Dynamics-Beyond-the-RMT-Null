@@ -1,0 +1,2 @@
+label,N,T_in,T_out,step,n_origins,n_train,n_validation,n_test,block_length_origins,independent_blocks,random_floor,frozen_capture,ceiling_capture,naive_headroom,ceiling_bias,real_headroom,validation_selected_ewma_half_life,rie_shrinkage_invisible,rie_invisible_after_renormalisation
+cac40_full,23,750,42,14,432,202,55,121,57,2.1228070175438596,0.2608695652173913,0.6178748468791609,0.7836781712117452,0.16580332433258427,0.0775709931577531,0.08823233117483117,252.0,True,False

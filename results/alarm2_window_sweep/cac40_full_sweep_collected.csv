@@ -1,0 +1,2 @@
+arm,N,T,horizon,step,q,deletion_fraction,origins,bootstrap_block_origins,independent_blocks,observed_addition_cosine,observed_full_cosine,deletion_attributed_fraction,projection_residual_cosine,positive_addition_fraction,n_origins_run,n_null,null_mean,null_sd,null_q95,excess,z,mde_excess,p
+A,23,750,42,14,0.030666666666666665,0.056,429,60,7.15,0.0844646743787794,0.0997945220560776,0.4883249380444661,0.0689178198817241,0.6317016317016317,429,24,0.05052119063280116,0.016472159363043283,0.07480270032918358,0.03394348374597824,2.060657804351589,0.024281509696382424,0.04

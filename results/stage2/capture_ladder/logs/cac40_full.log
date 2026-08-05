@@ -1,0 +1,27 @@
+  cac40_full: 100/432 origins [1s]
+  cac40_full: 200/432 origins [1s]
+  cac40_full: 300/432 origins [2s]
+  cac40_full: 400/432 origins [2s]
+  cac40_full: 432/432 origins [3s]
+
+What is tested: the Stage 2 capture ladder on test origins only, EWMA half-life selected on validation.
+Setup: T_in=750, T_out=42, step=14; circular-block interval at block length 57 origins.
+     label  N  n_test  independent_blocks  random_floor  frozen_capture  ceiling_capture  naive_headroom  ceiling_bias  real_headroom  validation_selected_ewma_half_life  rie_shrinkage_invisible  rie_invisible_after_renormalisation
+cac40_full 23     121              2.1228        0.2609          0.6179           0.7837          0.1658        0.0776         0.0882                            252.0000                     True                                False
+
+Paired against Frozen on test origins:
+     label      entrant  paired_improvement  improvement_ci_low  improvement_ci_high  origin_win_fraction  excludes_zero
+cac40_full      ceiling              0.1658              0.1405               0.1900               1.0000           True
+cac40_full   ewma_hl_21             -0.0220             -0.0296              -0.0145               0.2149           True
+cac40_full   ewma_hl_42             -0.0081             -0.0177               0.0012               0.4050          False
+cac40_full   ewma_hl_63             -0.0019             -0.0130               0.0088               0.5537          False
+cac40_full  ewma_hl_126              0.0043             -0.0041               0.0126               0.6033          False
+cac40_full  ewma_hl_252              0.0042             -0.0025               0.0109               0.6281          False
+cac40_full  ewma_hl_504              0.0031             -0.0039               0.0099               0.6281          False
+cac40_full ewma_hl_1008              0.0015             -0.0057               0.0087               0.6033          False
+cac40_full  ewma_hl_inf             -0.0007             -0.0085               0.0070               0.5785          False
+cac40_full  ledoit_wolf              0.0000             -0.0000               0.0000               0.3636          False
+cac40_full          oas              0.0000             -0.0000               0.0000               0.3554          False
+cac40_full          qis             -0.0002             -0.0005               0.0001               0.4628          False
+
+Rotationally-invariant class: max |improvement| = 0.000188. Shrinkage step invisible on every origin = True; still invisible after the ladder's correlation renormalisation = False.

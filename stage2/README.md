@@ -1,5 +1,17 @@
 # Stage 2 — Forecast
 
+> **Closed, 2026-08-05.** The geometric-loss ladder documented below was
+> superseded by the respecified realised-variance capture score, and the
+> forecasting question now has a documented negative answer. Model 4.1 — a
+> five-parameter correction confined to the only block a subspace metric can
+> see, fitted four different ways — does not beat the EWMA it contains on any
+> of four markets, and is significantly worse on DAX. All four losses score
+> within $4\times10^{-4}$ capture of one another: the objective is flat.
+> See the closing section of [`../BUILDNOTES.md`](../BUILDNOTES.md) and the
+> result tables in [`../README.md`](../README.md). Everything below this banner
+> is the historical record of how the ladder was built and why it was
+> respecified; the frozen benchmark registry remains reproducible.
+
 **Model fitting started, but Regime 4.9 forced a structural correction before
 Model 3.2.** The entry-gate experiments exist as
 `scripts/regime4_4_tangent.py`, `scripts/regime4_5_coherence.py` and
